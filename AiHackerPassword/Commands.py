@@ -6,11 +6,11 @@ import random
 import time
 from typing import Optional
 
-from Colors import (
+from AiHackerPassword.Colors import (
     BRIGHT_GREEN, GREEN, DIM_GREEN, RED, YELLOW, CYAN, WHITE, RESET,
-    g, r, y, c, dim, slow_print, scan_line
+    r, y, dim, slow_print
 )
-from Art import art_iamroot, art_godmode, art_matrix
+from AiHackerPassword.Art import art_iamroot, art_godmode, art_matrix
 
 
 # ─── СИСТЕМА НАВОДОК ─────────────────────────────────────────────────────────

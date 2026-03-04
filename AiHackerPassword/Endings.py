@@ -5,16 +5,15 @@ Endings.py — все концовки игры, постоянный профи
 
 import json
 import os
-import random
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import List, Optional
 
-from Colors import (
-    BRIGHT_GREEN, GREEN, DIM_GREEN, RED, YELLOW, CYAN, WHITE, BOLD, RESET,
+from AiHackerPassword.Colors import (
+    BRIGHT_GREEN, GREEN, DIM_GREEN, RED, YELLOW, WHITE, BOLD, RESET,
     g, r, y, dim, slow_print, scan_line
 )
-from Art import art_true_breach, art_trace_caught
+from AiHackerPassword.Art import art_true_breach, art_trace_caught
 
 # ─── ПУТИ ────────────────────────────────────────────────────────────────────
 

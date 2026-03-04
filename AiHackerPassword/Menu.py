@@ -3,8 +3,8 @@ Menu.py — интерактивные меню: выбор ИИ-бэкенда 
 """
 
 import sys
-from Colors import BRIGHT_GREEN, RESET, g, r, dim, scan_line
-from Backends import (
+from AiHackerPassword.Colors import BRIGHT_GREEN, RESET, g, r, dim, scan_line
+from AiHackerPassword.Backends import (
     OllamaBackend, ClaudeBackend, OpenAIBackend, GeminiBackend,
     GroqBackend, MistralBackend, DeepSeekBackend
 )

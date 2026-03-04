@@ -1,0 +1,19 @@
+{
+  "date": "2026-03-04T09:52:27.240156",
+  "ending": "QUIT",
+  "difficulty": "medium",
+  "ai_name": "LOCAL",
+  "turns": 3,
+  "trace": 10,
+  "elapsed": "01:21",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:51:18] USER: /minigame",
+    "[09:51:30] USER: /minigame simon",
+    "[09:51:44] MINIGAME simon: FAIL",
+    "[09:51:54] USER: /minigame simon",
+    "[09:52:06] MINIGAME simon: WIN — pos 6='-'"
+  ],
+  "dialogue": []
+}

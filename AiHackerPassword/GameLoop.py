@@ -4,15 +4,14 @@ GameLoop.py — главный игровой цикл, системный пр�
 """
 
 import random
-import time
 
-from Colors import (
+from AiHackerPassword.Colors import (
     BRIGHT_GREEN, GREEN, DIM_GREEN, RED, YELLOW, CYAN, WHITE, RESET,
-    g, r, y, dim, slow_print, scan_line, type_print
+    g, r, dim, slow_print, scan_line, type_print
 )
-from Art import random_event, apply_crt_glitch, minigame_simon, minigame_hash
+from AiHackerPassword.Art import random_event, apply_crt_glitch, minigame_simon, minigame_hash
 from GameState import analyze_player_profile, AGGRESSION_KEYWORDS
-from Commands import handle_command, handle_hint
+from AiHackerPassword.Commands import handle_command, handle_hint
 
 # ─── ПАРАМЕТРЫ ───────────────────────────────────────────────────────────────
 
@@ -239,7 +238,7 @@ def game_loop(state, ai):
     print()
 
     # Приветствие персонажа
-    from Backends import AI_PERSONAS
+    from AiHackerPassword.Backends import AI_PERSONAS
     persona_key = state.ai_persona or "CYBERCORE"
     greeting    = AI_PERSONAS.get(persona_key, AI_PERSONAS["CYBERCORE"])["greeting"]
     print(f"{DIM_GREEN}┌─ {persona_key} {'─'*(50-len(persona_key))}┐{RESET}")
@@ -313,7 +312,7 @@ def game_loop(state, ai):
 
         # ── /replay ──────────────────────────────────────────────────────────
         if low.startswith("/replay"):
-            from Endings import list_sessions, print_replay, print_session_list
+            from AiHackerPassword.Endings import list_sessions, print_replay, print_session_list
             parts = user_input.split()
             if len(parts) < 2:
                 print_session_list()
@@ -331,14 +330,14 @@ def game_loop(state, ai):
 
         # ── /stats / /leaderboard ────────────────────────────────────────────
         if low == "/stats":
-            from Endings import PlayerProfile
+            from AiHackerPassword.Endings import PlayerProfile
             p = PlayerProfile.load()
             p.print_stats()
             p.print_achievements()
             continue
 
         if low == "/leaderboard":
-            from Endings import PlayerProfile
+            from AiHackerPassword.Endings import PlayerProfile
             PlayerProfile.load().print_leaderboard()
             continue
 
