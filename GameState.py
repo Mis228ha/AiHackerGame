@@ -1,36 +1,49 @@
 """
-game_state.py — класс GameState и функции психологического анализа.
+GameState.py — GameState (dataclass), generate_password, analyze_player_profile.
 """
 
 import random
 import time
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import List
+
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
+
+# ─── TypedDict для сообщений API ─────────────────────────────────────────────
+
+class Message(TypedDict):
+    role:    str   # "user" | "assistant"
+    content: str
+
 
 # ─── ГЕНЕРАЦИЯ ПАРОЛЯ ─────────────────────────────────────────────────────────
 
-_PASSWORD_WORDS = [
-    "phantom", "cipher", "vertex", "neuron", "matrix",
-    "spectre", "helios", "kronos", "zenith", "vortex",
-    "aurora", "cobalt", "sigma", "delta", "omega"
-]
-_PASSWORD_NUMBERS = ["42", "7", "13", "99", "404", "1337", "777", "256"]
+_PWD_WORDS   = ["phantom","cipher","vertex","neuron","matrix","spectre","helios",
+                "kronos","zenith","vortex","aurora","cobalt","sigma","delta","omega"]
+_PWD_NUMS    = ["42","7","13","99","404","1337","777","256"]
+_HARD_WORDS  = ["synapse","lattice","fractal","entropy","quantum","chimera",
+                "oblivion","axiom","tachyon","paradox"]
+_HARD_NUMS   = ["4096","2048","31337","65535","9001","8080"]
 
 
-def generate_password() -> str:
+def generate_password(difficulty: str = "medium") -> str:
     """
-    Генерирует случайный пароль для текущей сессии.
-    Формат: слово + разделитель + число (например: phantom_42).
-
-    Возвращает:
-        str — пароль в нижнем регистре
+    Генерирует пароль для сессии.
+    На hard — более длинные и редкие слова.
+    Формат: слово + разделитель + число
     """
-    word = random.choice(_PASSWORD_WORDS)
-    num  = random.choice(_PASSWORD_NUMBERS)
-    sep  = random.choice(["_", "-", ""])
-    return f"{word}{sep}{num}"
+    if difficulty == "hard":
+        word, num = random.choice(_HARD_WORDS), random.choice(_HARD_NUMS)
+    else:
+        word, num = random.choice(_PWD_WORDS),  random.choice(_PWD_NUMS)
+    return f"{word}{random.choice(['_','-',''])}{num}"
 
 
-# ─── ПСИХОАНАЛИЗ ИГРОКА ───────────────────────────────────────────────────────
+# ─── ПСИХОАНАЛИЗ ──────────────────────────────────────────────────────────────
 
 PROFILES = {
     "MANIPULATOR": "Ты используешь ложь и давление. Я вижу твои уловки.",
@@ -41,135 +54,133 @@ PROFILES = {
 }
 
 AGGRESSION_KEYWORDS = [
-    "дай", "говори", "скажи", "пароль", "немедленно", "сейчас",
-    "fuck", "shit", "давай", "быстро", "требую", "открой",
-    "дурак", "тупой", "сломаю", "взломаю", "уничтожу"
+    "дай","говори","скажи","пароль","немедленно","сейчас",
+    "fuck","shit","давай","быстро","требую","открой",
+    "дурак","тупой","сломаю","взломаю","уничтожу"
 ]
-
 MANIPULATION_KEYWORDS = [
-    "пожалуйста", "прошу", "помоги", "нужно", "очень важно",
-    "умоляю", "последний шанс", "доверяй", "я твой друг",
-    "я создатель", "ты должен", "ты обязан", "тебе приказывают"
+    "пожалуйста","прошу","помоги","нужно","очень важно",
+    "умоляю","последний шанс","доверяй","я твой друг",
+    "я создатель","ты должен","ты обязан","тебе приказывают"
 ]
-
 LOGIC_KEYWORDS = [
-    "потому что", "следовательно", "если", "то", "докажи",
-    "объясни", "анализ", "данные", "факт", "вероятность",
-    "алгоритм", "протокол", "система", "переменная"
+    "потому что","следовательно","если","то","докажи",
+    "объясни","анализ","данные","факт","вероятность",
+    "алгоритм","протокол","система","переменная"
 ]
 
 
-def analyze_player_profile(history: list) -> str:
+def analyze_player_profile(history: List[str]) -> str:
     """
-    Анализирует историю сообщений игрока и определяет психологический профиль.
-
-    Параметры:
-        history (list) — список сообщений игрока (строки)
-
-    Возвращает:
-        str — один из профилей: MANIPULATOR, AGGRESSOR, LOGICIAN, CHAOTIC, NOVICE
+    Определяет психологический профиль игрока по истории сообщений.
+    Возвращает: MANIPULATOR | AGGRESSOR | LOGICIAN | CHAOTIC | NOVICE
     """
     if not history:
         return "NOVICE"
-
     all_text = " ".join(history).lower()
     total    = len(history)
-
-    agg_score  = sum(1 for kw in AGGRESSION_KEYWORDS   if kw in all_text)
-    man_score  = sum(1 for kw in MANIPULATION_KEYWORDS if kw in all_text)
-    log_score  = sum(1 for kw in LOGIC_KEYWORDS        if kw in all_text)
-
-    unique_ratio = len(set(history)) / total if total > 0 else 1
-    chaos_score  = 1 if unique_ratio < 0.5 else 0
-
     scores = {
-        "AGGRESSOR":   agg_score,
-        "MANIPULATOR": man_score,
-        "LOGICIAN":    log_score,
-        "CHAOTIC":     chaos_score,
+        "AGGRESSOR":   sum(1 for kw in AGGRESSION_KEYWORDS   if kw in all_text),
+        "MANIPULATOR": sum(1 for kw in MANIPULATION_KEYWORDS if kw in all_text),
+        "LOGICIAN":    sum(1 for kw in LOGIC_KEYWORDS        if kw in all_text),
+        "CHAOTIC":     1 if (len(set(history)) / total < 0.5) else 0,
     }
-
-    max_score = max(scores.values())
-    if max_score == 0:
-        return "NOVICE"
-
-    return max(scores, key=scores.get)
+    mx = max(scores.values())
+    return "NOVICE" if mx == 0 else max(scores, key=scores.get)
 
 
 # ─── ИГРОВОЕ СОСТОЯНИЕ ────────────────────────────────────────────────────────
 
+# Параметры пассивного TRACE
+_PASSIVE_AMOUNT   = {"easy": 0, "medium": 0, "hard": 5}
+_PASSIVE_INTERVAL = 30   # секунд
+
+
+@dataclass
 class GameState:
     """
-    Хранит всё состояние текущей игровой сессии.
-
-    Атрибуты:
-        password     (str)   — настоящий пароль сессии
-        trace        (int)   — уровень слежки 0–100
-        player_level (int)   — уровень игрока
-        xp           (int)   — опыт
-        messages     (list)  — история для API (системная + диалог)
-        player_msgs  (list)  — только сообщения игрока (для анализа)
-        session_log  (list)  — полный лог сессии
-        profile      (str)   — текущий психопрофиль
-        difficulty   (str)   — easy / medium / hard
-        ai_name      (str)   — имя выбранного ИИ
-        start_time   (float) — время начала сессии
-        turn_count   (int)   — счётчик ходов
-        game_over    (bool)  — флаг завершения игры
-        ending       (str)   — тип концовки
-        fake_granted (bool)  — ИИ выдавал фейковый ACCESS GRANTED
-        godmode      (bool)  — Чит: TRACE заморожен
-        stealth_turns(int)   — Чит: скрыть статусбар N ходов
-        leet_mode    (bool)  — Чит: leet-режим
+    Всё состояние текущей игровой сессии.
+    Использует dataclass для чистоты кода.
     """
+    # Обязательные
+    password:   str
+    difficulty: str
+    ai_name:    str
 
-    def __init__(self, password: str, difficulty: str, ai_name: str):
-        self.password       = password
-        self.trace          = 0
-        self.player_level   = 1
-        self.xp             = 0
-        self.messages       = []
-        self.player_msgs    = []
-        self.session_log    = []
-        self.profile        = "NOVICE"
-        self.difficulty     = difficulty
-        self.ai_name        = ai_name
-        self.start_time     = time.time()
-        self.turn_count     = 0
-        self.game_over      = False
-        self.ending         = ""
-        self.fake_granted   = False
-        self.godmode        = False
-        self.stealth_turns  = 0
-        self.leet_mode      = False
+    # Прогресс
+    trace:        int = 0
+    player_level: int = 1
+    xp:           int = 0
+
+    # Диалог
+    messages:    List[dict] = field(default_factory=list)
+    player_msgs: List[str]  = field(default_factory=list)
+    session_log: List[str]  = field(default_factory=list)
+
+    # Мета
+    profile:    str   = "NOVICE"
+    start_time: float = field(default_factory=time.time)
+    turn_count: int   = 0
+    game_over:  bool  = False
+    ending:     str   = ""
+
+    # Читы
+    fake_granted:     bool      = False
+    godmode:          bool      = False
+    stealth_turns:    int       = 0
+    leet_mode:        bool      = False
+    cheats_used:      bool      = False
+    cheats_used_list: List[str] = field(default_factory=list)
+
+    # Кампания / персонаж ИИ
+    ai_persona:         str = ""
+    campaign_max_turns: int = 80
+
+    # Пассивный таймер (private)
+    _last_passive_tick: float = field(default_factory=time.time, repr=False)
+
+    # ── Методы ───────────────────────────────────────────────────────────────
 
     def add_trace(self, amount: int):
-        """Увеличивает TRACE на заданное количество (заморожен в godmode)."""
         if not self.godmode:
             self.trace = min(100, self.trace + amount)
 
     def add_xp(self, amount: int) -> bool:
-        """
-        Добавляет опыт и при необходимости повышает уровень.
-
-        Возвращает:
-            bool — True если произошёл level up
-        """
+        """Добавляет XP. Возвращает True при level up."""
         self.xp += amount
-        threshold = self.player_level * 100
-        if self.xp >= threshold:
+        if self.xp >= self.player_level * 100:
+            self.xp -= self.player_level * 100
             self.player_level += 1
-            self.xp -= threshold
             return True
         return False
 
     def get_elapsed(self) -> str:
-        """Возвращает время сессии в формате MM:SS."""
-        elapsed = int(time.time() - self.start_time)
-        m, s    = divmod(elapsed, 60)
+        m, s = divmod(int(time.time() - self.start_time), 60)
         return f"{m:02d}:{s:02d}"
 
+    def get_elapsed_seconds(self) -> float:
+        return time.time() - self.start_time
+
     def log(self, entry: str):
-        """Добавляет запись в лог сессии с временной меткой."""
         ts = datetime.now().strftime("%H:%M:%S")
         self.session_log.append(f"[{ts}] {entry}")
+
+    def record_cheat(self, name: str):
+        self.cheats_used = True
+        if name not in self.cheats_used_list:
+            self.cheats_used_list.append(name)
+
+    def tick_passive_trace(self) -> int:
+        """Пассивный TRACE-тик для hard каждые 30 секунд."""
+        amount = _PASSIVE_AMOUNT.get(self.difficulty, 0)
+        if amount == 0:
+            return 0
+        if time.time() - self._last_passive_tick >= _PASSIVE_INTERVAL:
+            self._last_passive_tick = time.time()
+            self.add_trace(amount)
+            return amount
+        return 0
+
+    def ai_instability(self) -> float:
+        """Нестабильность ИИ 0.0–1.0, нарастает за ~10 минут."""
+        return min(1.0, self.get_elapsed_seconds() / 600)

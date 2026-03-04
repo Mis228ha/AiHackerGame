@@ -1,5 +1,5 @@
 """
-colors.py — ANSI-цвета, утилиты вывода и разделительные линии.
+Colors.py — ANSI-цвета, утилиты вывода и разделительные линии.
 """
 
 import time
@@ -19,39 +19,16 @@ BLINK        = "\033[5m"
 RESET        = "\033[0m"
 
 
-def g(text):
-    """Обернуть текст в зелёный цвет терминала."""
-    return f"{GREEN}{text}{RESET}"
-
-def bg(text):
-    """Обернуть текст в ярко-зелёный цвет."""
-    return f"{BRIGHT_GREEN}{text}{RESET}"
-
-def r(text):
-    """Обернуть текст в красный цвет (опасность)."""
-    return f"{RED}{text}{RESET}"
-
-def y(text):
-    """Обернуть текст в жёлтый цвет (предупреждение)."""
-    return f"{YELLOW}{text}{RESET}"
-
-def c(text):
-    """Обернуть текст в голубой цвет (системные сообщения)."""
-    return f"{CYAN}{text}{RESET}"
-
-def dim(text):
-    """Приглушённый текст."""
-    return f"{DIM_GREEN}{text}{RESET}"
+def g(text):   return f"{GREEN}{text}{RESET}"
+def bg(text):  return f"{BRIGHT_GREEN}{text}{RESET}"
+def r(text):   return f"{RED}{text}{RESET}"
+def y(text):   return f"{YELLOW}{text}{RESET}"
+def c(text):   return f"{CYAN}{text}{RESET}"
+def dim(text): return f"{DIM_GREEN}{text}{RESET}"
 
 
 def slow_print(text, delay=0.018):
-    """
-    Печатает текст посимвольно с задержкой для атмосферного эффекта.
-
-    Параметры:
-        text  (str)   — текст для вывода
-        delay (float) — задержка между символами в секундах
-    """
+    """Посимвольная печать с задержкой."""
     for ch in text:
         print(ch, end='', flush=True)
         time.sleep(delay)
@@ -59,13 +36,7 @@ def slow_print(text, delay=0.018):
 
 
 def type_print(text, delay=0.012):
-    """
-    Быстрая версия посимвольной печати для ответов ИИ.
-
-    Параметры:
-        text  (str)   — текст
-        delay (float) — задержка
-    """
+    """Быстрая посимвольная печать для ответов ИИ."""
     for ch in text:
         print(ch, end='', flush=True)
         time.sleep(delay)
@@ -73,12 +44,5 @@ def type_print(text, delay=0.012):
 
 
 def scan_line(char="─", length=60, color=DIM_GREEN):
-    """
-    Выводит горизонтальную разделительную линию.
-
-    Параметры:
-        char   (str) — символ линии
-        length (int) — длина
-        color  (str) — ANSI-цвет
-    """
+    """Горизонтальная разделительная линия."""
     print(f"{color}{char * length}{RESET}")

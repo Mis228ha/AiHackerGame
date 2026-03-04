@@ -1,0 +1,16 @@
+{
+  "wins": 0,
+  "losses": 2,
+  "total_sessions": 2,
+  "total_turns": 49,
+  "best_time": null,
+  "best_turns": null,
+  "min_trace_win": null,
+  "achievements": [],
+  "unlocked_skins": [
+    "default"
+  ],
+  "active_skin": "default",
+  "campaign_level": 1,
+  "leaderboard": []
+}
