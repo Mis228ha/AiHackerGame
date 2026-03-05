@@ -1,0 +1,18 @@
+{
+  "date": "2026-03-05T09:56:03.851187",
+  "ending": "QUIT",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 3,
+  "trace": 8,
+  "elapsed": "01:44",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:54:36] USER: /help",
+    "[09:54:54] USER: /minigame",
+    "[09:55:24] USER: /minigame crc",
+    "[09:55:34] MINIGAME crc: INVALID INPUT"
+  ],
+  "dialogue": []
+}

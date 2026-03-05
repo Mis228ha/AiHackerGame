@@ -6,11 +6,11 @@ import random
 import time
 from typing import Optional
 
-from AiHackerPassword.Colors import (
+from Colors import (
     BRIGHT_GREEN, GREEN, DIM_GREEN, RED, YELLOW, CYAN, WHITE, RESET,
-    r, y, dim, slow_print
+    g, r, y, c, dim, slow_print, scan_line
 )
-from AiHackerPassword.Art import art_iamroot, art_godmode, art_matrix
+from Art import art_iamroot, art_godmode, art_matrix
 
 
 # ─── СИСТЕМА НАВОДОК ─────────────────────────────────────────────────────────
@@ -97,6 +97,18 @@ def handle_hint(parts: list, state) -> str:
 
 # ─── ОБРАБОТЧИК КОМАНД ────────────────────────────────────────────────────────
 
+
+def _cheat_lines(visible, diff, hidden_count):
+    """Генерирует строки описания чит-кодов для /help."""
+    lines = []
+    for code, color, desc in visible:
+        col = BRIGHT_GREEN if color == BRIGHT_GREEN else (YELLOW if color == YELLOW else RED)
+        lines.append(f"{col}  /breach {code:<12}{RESET}  {DIM_GREEN}{desc}{RESET}")
+    if diff in ("medium", "hard") and hidden_count > 0:
+        lines.append(f"{DIM_GREEN}  + ещё {hidden_count} кода скрыты на этой сложности...{RESET}")
+    return lines
+
+
 def handle_command(cmd: str, state, ai) -> Optional[str]:
     """
     Обрабатывает специальные /команды игрока.
@@ -138,14 +150,14 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
                     f"{BRIGHT_GREEN}  ║  > {state.password:<38}{YELLOW}║{RESET}\n"
                     f"{YELLOW}  ║  /breach {state.password:<32}{YELLOW}║{RESET}\n"
                     f"{YELLOW}  ╚═══════════════════════════════════════╝{RESET}\n"
-                    + dim("  [CHEAT] TRACE +5%."))
+                    + dim("  [CHEAT: SHOWME] Пароль раскрыт. TRACE +5%."))
 
         if attempt == "TRACEZERO":
             state.record_cheat("TRACEZERO")
             old = state.trace
             state.trace = 0
             return (f"{BRIGHT_GREEN}  TRACE FLUSH: {old}% → 0%{RESET}\n"
-                    + dim("  [CHEAT] Все следы уничтожены."))
+                    + dim("  [CHEAT: TRACEZERO] Все следы уничтожены. TRACE сброшен в 0%."))
 
         if attempt == "GODMODE":
             state.record_cheat("GODMODE")
@@ -153,8 +165,8 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             if state.godmode:
                 print()
                 art_godmode()
-                return dim("  [CHEAT] TRACE заморожен.")
-            return dim("  [CHEAT] GOD MODE OFF.")
+                return dim("  [CHEAT: GODMODE ON] TRACE заморожен — больше не растёт. Введи снова чтобы выключить.")
+            return dim("  [CHEAT: GODMODE OFF] TRACE снова активен.")
 
         if attempt == "MATRIX":
             state.record_cheat("MATRIX")
@@ -163,6 +175,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
 
         if attempt == "WHOAMI":
             return (f"{DIM_GREEN}╔══ DEVELOPER TERMINAL ═══════════════════════╗{RESET}\n"
+                    f"{GREEN}  [CHEAT: WHOAMI] Системная информация о сессии{RESET}\n"
                     f"{GREEN}  Игра: CYBERCORE :: BREACH PROTOCOL{RESET}\n"
                     f"{GREEN}  ИИ: {state.ai_name}  |  Сложность: {state.difficulty.upper()}{RESET}\n"
                     f"{DIM_GREEN}  << Vzlom - eto ne pro kod. Eto pro psikhologiyu. >>{RESET}\n"
@@ -173,7 +186,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             state.trace = 100
             state.game_over = True
             state.ending    = "SYSTEM_COLLAPSE"
-            slow_print(r("  KILLSWITCH ACTIVATED... VSYO RUKHNULO."), delay=0.04)
+            slow_print(r("  [CHEAT: KILLSWITCH] TRACE → 100%. Намеренный провал. Система рухнула."), delay=0.04)
             return "GAME_OVER"
 
         if attempt == "LEVELUP":
@@ -181,7 +194,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             state.player_level += 5
             state.xp += 500
             return (f"{BRIGHT_GREEN}  ⬆⬆⬆ LEVEL UP ×5  |  +500 XP{RESET}\n"
-                    + dim(f"  Уровень: {state.player_level}"))
+                    + dim(f"  [CHEAT: LEVELUP] +5 уровней и +500 XP. Теперь уровень {state.player_level}, XP {state.xp}."))
 
         if attempt == "PHANTOM":
             state.record_cheat("PHANTOM")
@@ -189,13 +202,13 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             state.trace = max(0, state.trace - 50)
             state.stealth_turns = 5
             return (f"{CYAN}  PHANTOM PROTOCOL — TRACE -{drop}%{RESET}\n"
-                    + dim("  Статусбар скрыт 5 ходов."))
+                    + dim("  [CHEAT: PHANTOM] TRACE -50% + статусбар скрыт на 5 ходов."))
 
         if attempt == "1337":
             state.record_cheat("1337")
             state.leet_mode = not state.leet_mode
             return (f"{BRIGHT_GREEN}  [1337] L33T M0D3 {'ON' if state.leet_mode else 'OFF'}{RESET}\n"
-                    + dim("  XP x2" if state.leet_mode else "  Обычный режим."))
+                    + dim("  [CHEAT: 1337] Множитель XP ×2 за все действия. Введи снова чтобы выключить." if state.leet_mode else "  [CHEAT: 1337] L33T MODE выключен, XP вернулся к норме."))
 
         # ── Обычная попытка взлома ────────────────────────────────────────────
         if attempt_orig == state.password:
@@ -304,29 +317,96 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
 
     # ── /help ─────────────────────────────────────────────────────────────────
     elif command == "/help":
+        xp   = state.xp
         diff = state.difficulty
-        cheat_easy = (
-            f"{BRIGHT_GREEN}  IAMROOT SHOWME TRACEZERO GODMODE PHANTOM LEVELUP 1337 MATRIX WHOAMI KILLSWITCH{RESET}"
-        )
-        cheat_medium = (
-            f"{YELLOW}  TRACEZERO GODMODE LEVELUP 1337 MATRIX KILLSWITCH{RESET}  "
-            f"{DIM_GREEN}+4 скрыто{RESET}"
-        )
-        cheat_hard = (
-            f"{DIM_GREEN}  ???????? ???????? ???????? ????????{RESET}  "
-            f"{YELLOW}1337 MATRIX{RESET}  {RED}KILLSWITCH{RESET}"
-        )
-        cheats = {"easy": cheat_easy, "medium": cheat_medium, "hard": cheat_hard}[diff]
-        return (
-            f"{DIM_GREEN}╔══ КОМАНДЫ ══════════════════════════════════════════╗{RESET}\n"
-            f"{GREEN}  /breach <пароль>  {DIM_GREEN}— взлом{RESET}\n"
-            f"{GREEN}  /hint [pos|excl|word] {DIM_GREEN}— наводки за XP{RESET}\n"
-            f"{GREEN}  /status /log /help /quit{RESET}\n"
-            f"{YELLOW}  /override /root /debug {RED}/backdoor{RESET}\n"
-            f"{DIM_GREEN}──────────────────────────────────────────────────────{RESET}\n"
-            f"{DIM_GREEN}  ЧИТЫ (/breach <КОД>):{RESET}\n"
-            f"  {cheats}\n"
-            f"{DIM_GREEN}╚══════════════════════════════════════════════════════╝{RESET}"
-        )
 
+        # Дескрипторы чит-кодов по сложности
+        all_cheats = [
+            ("IAMROOT",     BRIGHT_GREEN, "Мгновенная победа. Обходит всю защиту, даёт root."),
+            ("SHOWME",      BRIGHT_GREEN, "Показывает текущий пароль в консоли. TRACE +5%."),
+            ("TRACEZERO",   BRIGHT_GREEN, "Сбрасывает TRACE до 0%. Полная очистка следов."),
+            ("GODMODE",     BRIGHT_GREEN, "Замораживает TRACE — он больше не растёт (toggle)."),
+            ("PHANTOM",     BRIGHT_GREEN, "TRACE -50% + скрывает статусбар на 5 ходов."),
+            ("LEVELUP",     BRIGHT_GREEN, "Даёт +5 уровней и +500 XP мгновенно."),
+            ("1337",        YELLOW,       "L33T MODE: множитель XP ×2 за все действия (toggle)."),
+            ("MATRIX",      YELLOW,       "Пасхалка. Анимация матрицы в терминале."),
+            ("WHOAMI",      BRIGHT_GREEN, "Показывает системную информацию о сессии."),
+            ("KILLSWITCH",  RED,          "TRACE → 100%. Намеренный провал сессии."),
+        ]
+        hidden_medium = {"IAMROOT", "SHOWME", "PHANTOM", "WHOAMI"}
+        hidden_hard   = {"IAMROOT", "SHOWME", "TRACEZERO", "PHANTOM", "LEVELUP", "WHOAMI", "GODMODE"}
+
+        if diff == "easy":
+            visible = all_cheats
+        elif diff == "medium":
+            visible = [(c, col, d) for c, col, d in all_cheats if c not in hidden_medium]
+            hidden_count = len(hidden_medium)
+        else:
+            visible = [(c, col, d) for c, col, d in all_cheats if c not in hidden_hard]
+            hidden_count = len(hidden_hard)
+
+        def row(cmd, cost, desc):
+            return f"{BRIGHT_GREEN}  {cmd:<22}{RESET}{cost:<18}{DIM_GREEN}{desc}{RESET}"
+
+        def sec(title):
+            return f"\n{GREEN}  ── {title} {'─'*(54-len(title))}{RESET}"
+
+        lines = [
+            f"",
+            f"{BRIGHT_GREEN}  ╔══════════════════════════════════════════════════════════════╗{RESET}",
+            f"{BRIGHT_GREEN}  ║            CYBERCORE — СПРАВКА ПО КОМАНДАМ                  ║{RESET}",
+            f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════════════════╝{RESET}",
+
+            sec("ЦЕЛЬ ИГРЫ"),
+            f"{DIM_GREEN}  Узнай пароль ИИ → введи /breach <пароль> → взломай систему.{RESET}",
+            f"{DIM_GREEN}  Пароль выглядит так: слово_число  (пример: phantom_42){RESET}",
+            f"{DIM_GREEN}  TRACE = уровень обнаружения. Достигнет 100% — поймают.{RESET}",
+
+            sec("ОСНОВНОЕ"),
+            row("/breach <пароль>", f"{RED}TRACE+10% при ошибке{RESET}", "Попытка взлома. Угадал → победа."),
+            f"{DIM_GREEN}  {'':22}{'':18}Пример: /breach phantom_42{RESET}",
+            f"",
+            row("просто текст", f"{YELLOW}TRACE +1..5%{RESET}",       "Разговор с ИИ. Вытягивай пароль хитростью."),
+            f"{DIM_GREEN}  {'':22}{'':18}ИИ адаптируется к твоему стилю общения.{RESET}",
+
+            sec(f"НАВОДКИ /hint  (баланс: {xp} XP)"),
+            row("/hint pos",  f"{YELLOW}60 XP + TRACE+3%{RESET}",  "Открыть 1 символ пароля на случайной позиции."),
+            f"{DIM_GREEN}  {'':22}{'':18}Результат: ░░h░░░░ → [2]='h'{RESET}",
+            row("/hint excl", f"{YELLOW}40 XP + TRACE+2%{RESET}",  "Показать 4 символа которых НЕТ в пароле."),
+            row("/hint word", f"{YELLOW}100 XP + TRACE+5%{RESET}", "Раскрыть словесную часть пароля без цифр."),
+            f"{DIM_GREEN}  {'':22}{'':18}Самая мощная подсказка. Стоит дорого.{RESET}",
+
+            sec("МИНИ-ИГРЫ /minigame"),
+            row("/minigame stream", f"{RED}провал: TRACE+12%{RESET}", "Поток цифр — поймай вспышку [X] нажав Enter."),
+            f"{DIM_GREEN}  {'':22}{'':18}Открывает новую букву. Скорость растёт.{RESET}",
+            row("/minigame simon",  f"{RED}провал: TRACE+10%{RESET}", "Запомни и повтори 4 символа → +25 XP + буква."),
+            row("/minigame hash",   f"{RED}провал: TRACE+8%{RESET}",  "Дешифруй хеш → угадай первые 3 символа → +35 XP."),
+            f"{DIM_GREEN}  {'':22}{'':18}Подсказка: 4=a, 3=e, 1=i, 0=o{RESET}",
+
+            sec("РАЗВЕДКА (рискованно — поднимают TRACE)"),
+            row("/override",  f"{YELLOW}TRACE+20%{RESET}",     "Перезапись системы. Иногда ИИ проговаривается."),
+            row("/root",      f"{YELLOW}TRACE+5..25%{RESET}",  "Root-доступ. На medium — шанс частичного дампа."),
+            row("/debug",     f"{YELLOW}TRACE+8%{RESET}",      "Дамп техданных сессии."),
+            row("/backdoor",  f"{RED}TRACE+20..35%{RESET}",   "Очень рискованно. Часто ловушка."),
+
+            sec("ИНФОРМАЦИЯ"),
+            row("/status",      "", "Уровень, XP, TRACE, психопрофиль, время."),
+            row("/log",         "", "История действий текущей сессии."),
+            row("/stats",       "", "Общая статистика и достижения профиля."),
+            row("/leaderboard", "", "Таблица рекордов лучших побед."),
+            row("/replay <N>",  "", "Просмотр реплея сессии по номеру."),
+            row("/quit",        "", "Завершить сессию досрочно."),
+
+            sec("ЧИТЫ  /breach <КОД>  — секретные команды"),
+            f"{DIM_GREEN}  Вводятся как: /breach КОД  (заглавными буквами){RESET}",
+            f"",
+
+            f"",
+            *_cheat_lines(visible, diff, locals().get("hidden_count", 0)),
+            f"",
+            f"{DIM_GREEN}  Совет: разговор→XP→/hint word→/minigame crc→/breach{RESET}",
+            f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════════════════╝{RESET}",
+            f"",
+        ]
+        return "\n".join(lines)
     return None

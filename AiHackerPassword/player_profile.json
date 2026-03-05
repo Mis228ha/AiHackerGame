@@ -1,16 +1,38 @@
 {
-  "wins": 0,
-  "losses": 2,
-  "total_sessions": 2,
-  "total_turns": 49,
-  "best_time": null,
-  "best_turns": null,
-  "min_trace_win": null,
-  "achievements": [],
+  "wins": 2,
+  "losses": 10,
+  "total_sessions": 12,
+  "total_turns": 121,
+  "best_time": 199.37756180763245,
+  "best_turns": 3,
+  "min_trace_win": 5,
+  "achievements": [
+    "ghost",
+    "speedrun",
+    "matrix"
+  ],
   "unlocked_skins": [
-    "default"
+    "default",
+    "cyan"
   ],
   "active_skin": "default",
   "campaign_level": 1,
-  "leaderboard": []
+  "leaderboard": [
+    {
+      "date": "2026-03-05 09:30",
+      "turns": 3,
+      "trace": 12,
+      "time": 199,
+      "difficulty": "easy",
+      "cheats": true
+    },
+    {
+      "date": "2026-03-05 09:42",
+      "turns": 4,
+      "trace": 5,
+      "time": 313,
+      "difficulty": "easy",
+      "cheats": true
+    }
+  ]
 }

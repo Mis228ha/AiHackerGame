@@ -1,0 +1,16 @@
+{
+  "date": "2026-03-05T09:56:59.735133",
+  "ending": "QUIT",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 1,
+  "trace": 8,
+  "elapsed": "00:49",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:56:19] USER: /minigame crc",
+    "[09:56:50] MINIGAME crc: TIMEOUT limit=30s"
+  ],
+  "dialogue": []
+}

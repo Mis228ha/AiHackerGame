@@ -1,0 +1,29 @@
+{
+  "date": "2026-03-05T09:22:21.921055",
+  "ending": "QUIT",
+  "difficulty": "medium",
+  "ai_name": "LOCAL",
+  "turns": 9,
+  "trace": 69,
+  "elapsed": "04:13",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:18:17] USER: /minigame",
+    "[09:18:25] USER: /minigame stream",
+    "[09:18:28] MINIGAME datastream: MISS",
+    "[09:19:15] USER: /minigame stream",
+    "[09:19:18] MINIGAME datastream: MISS",
+    "[09:20:47] USER: /help",
+    "[09:21:04] USER: /root",
+    "[09:21:04] CMD: /root",
+    "[09:21:13] USER: /override",
+    "[09:21:13] CMD: /override (+20)",
+    "[09:21:22] USER: /debug",
+    "[09:21:22] CMD: /debug (+8)",
+    "[09:21:38] USER: /hint",
+    "[09:21:47] USER: /hint excl",
+    "[09:21:47] HINT excl: ['g', 'l', 'd', 'b']"
+  ],
+  "dialogue": []
+}

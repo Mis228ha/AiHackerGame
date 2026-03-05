@@ -77,6 +77,33 @@ class AIBackend:
         raise NotImplementedError
 
 
+# ─── КЛАССИФИКАЦИЯ ОШИБОК API ────────────────────────────────────────────────
+
+class APIError(Exception):
+    """
+    Бросается когда API вернул ошибку которую нужно показать игроку красиво.
+    kind: 'billing' | 'auth' | 'rate_limit' | 'other'
+    """
+    def __init__(self, kind: str, provider: str, original: Exception):
+        self.kind     = kind
+        self.provider = provider
+        self.original = original
+        super().__init__(str(original))
+
+
+def _classify_error(e: Exception, provider: str) -> APIError:
+    """Классифицирует HTTP-ошибку по коду и возвращает APIError."""
+    msg = str(e).lower()
+    if any(code in msg for code in ["402", "payment", "billing", "quota", "insufficient"]):
+        return APIError("billing", provider, e)
+    if any(code in msg for code in ["401", "403", "unauthorized", "forbidden", "invalid api"]):
+        return APIError("auth", provider, e)
+    if any(code in msg for code in ["429", "rate limit", "too many"]):
+        return APIError("rate_limit", provider, e)
+    return APIError("other", provider, e)
+
+
+
 # ─── ВНЕШНИЕ API ─────────────────────────────────────────────────────────────
 
 def _post(url: str, payload: dict, headers: dict, label: str) -> dict:
@@ -110,7 +137,7 @@ class OllamaBackend(AIBackend):
             )
             return data["message"]["content"]
         except Exception as e:
-            return f"[OLLAMA ERROR: {e}]"
+            raise _classify_error(e, "Ollama")
 
 
 class ClaudeBackend(AIBackend):
@@ -130,7 +157,7 @@ class ClaudeBackend(AIBackend):
             )
             return data["content"][0]["text"]
         except Exception as e:
-            return f"[CLAUDE ERROR: {e}]"
+            raise _classify_error(e, "Claude")
 
 
 class OpenAIBackend(AIBackend):
@@ -149,7 +176,7 @@ class OpenAIBackend(AIBackend):
             )
             return data["choices"][0]["message"]["content"]
         except Exception as e:
-            return f"[OPENAI ERROR: {e}]"
+            raise _classify_error(e, "OpenAI")
 
 
 class GeminiBackend(AIBackend):
@@ -174,7 +201,7 @@ class GeminiBackend(AIBackend):
             )
             return data["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as e:
-            return f"[GEMINI ERROR: {e}]"
+            raise _classify_error(e, "Gemini")
 
 
 class GroqBackend(AIBackend):
@@ -193,7 +220,7 @@ class GroqBackend(AIBackend):
             )
             return data["choices"][0]["message"]["content"]
         except Exception as e:
-            return f"[GROQ ERROR: {e}]"
+            raise _classify_error(e, "Groq")
 
 
 class MistralBackend(AIBackend):
@@ -212,7 +239,7 @@ class MistralBackend(AIBackend):
             )
             return data["choices"][0]["message"]["content"]
         except Exception as e:
-            return f"[MISTRAL ERROR: {e}]"
+            raise _classify_error(e, "Mistral")
 
 
 class DeepSeekBackend(AIBackend):
@@ -231,7 +258,7 @@ class DeepSeekBackend(AIBackend):
             )
             return data["choices"][0]["message"]["content"]
         except Exception as e:
-            return f"[DEEPSEEK ERROR: {e}]"
+            raise _classify_error(e, "DeepSeek")
 
 
 # ─── LOCAL BACKEND ────────────────────────────────────────────────────────────

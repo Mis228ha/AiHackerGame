@@ -1,0 +1,21 @@
+{
+  "date": "2026-03-05T09:30:42.548729",
+  "ending": "TRUE_BREACH",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 3,
+  "trace": 12,
+  "elapsed": "03:19",
+  "cheats": true,
+  "cheats_list": [
+    "IAMROOT"
+  ],
+  "log": [
+    "[09:27:33] USER: /minigame stream",
+    "[09:27:44] MINIGAME datastream: MISS (no press)",
+    "[09:30:05] USER: /help",
+    "[09:30:29] USER: /breach IAMROOT",
+    "[09:30:29] CHEAT: IAMROOT"
+  ],
+  "dialogue": []
+}

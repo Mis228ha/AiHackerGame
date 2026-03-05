@@ -1,0 +1,27 @@
+{
+  "date": "2026-03-05T09:54:13.104371",
+  "ending": "QUIT",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 7,
+  "trace": 0,
+  "elapsed": "04:52",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:49:31] USER: /minigame",
+    "[09:49:38] USER: /minigame crc",
+    "[09:50:26] MINIGAME crc: TIMEOUT (46.1s > 30s)",
+    "[09:51:54] USER: /minigame crc",
+    "[09:52:28] MINIGAME crc: TIMEOUT (32.6s > 30s)",
+    "[09:52:38] USER: /minigame crc",
+    "[09:52:43] MINIGAME crc: WIN in 3.47s",
+    "[09:52:47] USER: /minigame crc",
+    "[09:53:07] MINIGAME crc: WIN in 18.70s",
+    "[09:53:15] USER: /minigame crc",
+    "[09:53:33] MINIGAME crc: WRONG (got 122, need 121)",
+    "[09:53:39] USER: /minigame crc",
+    "[09:54:01] MINIGAME crc: WIN in 19.67s"
+  ],
+  "dialogue": []
+}

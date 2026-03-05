@@ -1,31 +1,18 @@
 """
-AiHackerGame.py — единственная точка входа в игру CYBERCORE :: BREACH PROTOCOL
+AiHackerGame.py — точка входа CYBERCORE :: BREACH PROTOCOL
 
 Запуск:
-    python AiHackerGame.py             — обычная игра
-    python AiHackerGame.py --campaign  — режим кампании (5 уровней)
-    python AiHackerGame.py --replay    — просмотр сохранённых сессий
-    python AiHackerGame.py --test      — запустить юнит-тесты
-
-Структура (9 файлов):
-    AiHackerGame.py  — точка входа, setup, тесты
-    Art.py           — ASCII-арт, CRT-эффект, события, мини-игры
-    Backends.py      — AI-бэкенды + спиннер + LocalBackend
-    Colors.py        — ANSI-цвета и утилиты вывода
-    Commands.py      — /команды, чит-коды, система наводок /hint
-    Endings.py       — концовки, профиль игрока, достижения, логирование
-    GameLoop.py      — игровой цикл, системный промпт, кампания
-    GameState.py     — GameState (dataclass), generate_password, психоанализ
-    Menu.py          — меню выбора ИИ и сложности
+    python AiHackerGame.py
+    python AiHackerGame.py --campaign
+    python AiHackerGame.py --replay
 """
 
 import os
 import sys
 import random
 import time
-import unittest
 
-from Colors import BRIGHT_GREEN, DIM_GREEN, GREEN, RED, YELLOW, RESET
+from Colors import BRIGHT_GREEN, DIM_GREEN, GREEN, RED, YELLOW, WHITE, RESET
 from Colors import g, r, y, dim, slow_print, scan_line
 
 from Art import BANNER
@@ -33,7 +20,7 @@ from GameState import GameState, generate_password
 from Backends import LocalBackend
 from Menu import select_ai_backend, select_difficulty
 from GameLoop import (
-    game_loop, CAMPAIGN_LEVELS, get_campaign_level,
+    game_loop, get_campaign_level,
     print_level_intro, print_level_complete, apply_level_modifiers
 )
 from Endings import (
@@ -44,17 +31,185 @@ from Endings import (
 )
 
 
+# ─── УТИЛИТА: СТРАНИЦА ТУТОРИАЛА ─────────────────────────────────────────────
+
+def _tpage(title: str, items: list, page: str):
+    """Печатает одну страницу туториала и ждёт Enter."""
+    os.system("clear" if os.name != "nt" else "cls")
+    print()
+    print(f"{BRIGHT_GREEN}  ╔══════════════════════════════════════════════════════════════╗{RESET}")
+    print(f"{BRIGHT_GREEN}  ║  {title:<60}║{RESET}")
+    print(f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════════════════╝{RESET}")
+    print()
+    for color, text in items:
+        if color is None:
+            print()
+        else:
+            slow_print(f"{color}  {text}{RESET}", delay=0.006)
+    print()
+    try:
+        input(f"{BRIGHT_GREEN}  ── [ Enter — {page} ] ──────────────────────────────────────────{RESET}")
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+
+# ─── ТУТОРИАЛ ────────────────────────────────────────────────────────────────
+
+def show_tutorial():
+    """
+    Полноэкранный туториал из 4 страниц.
+    Вызывается при первом запуске (нет player_profile.json)
+    или через python AiHackerGame.py --tutorial.
+    """
+
+    # ── Страница 1: Что это за игра ──────────────────────────────────────────
+    _tpage("ДОБРО ПОЖАЛОВАТЬ В CYBERCORE :: BREACH PROTOCOL  [1/4]", [
+        (GREEN,      "ЧТО ЭТО ЗА ИГРА?"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Ты — хакер-одиночка. Перед тобой — защитный ИИ корпорации"),
+        (DIM_GREEN,  "NovaCorp. У него есть секретный пароль. Твоя задача — узнать"),
+        (DIM_GREEN,  "его и взломать систему командой:  /breach <пароль>"),
+        (None, ""),
+        (DIM_GREEN,  "ИИ будет лгать, манипулировать и давить психологически."),
+        (DIM_GREEN,  "Разговаривай с ним, вытягивай информацию, используй подсказки."),
+        (None, ""),
+        (YELLOW,     "⚠  КАК ПРОИГРЫВАЮТ:"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Каждое действие поднимает TRACE — уровень обнаружения."),
+        (DIM_GREEN,  "Если TRACE достигнет 100% — тебя поймают. Игра окончена."),
+        (None, ""),
+        (DIM_GREEN,  "Статусбар вверху экрана:"),
+        (GREEN,      "░░░░░░░░░░  0%   — ты невидим, всё хорошо"),
+        (YELLOW,     "█████░░░░░ 50%   — система начинает подозревать"),
+        (RED,        "██████████ 100%  — ПОЙМАЛИ. КОНЕЦ."),
+        (None, ""),
+        (BRIGHT_GREEN, "КАК ВЫИГРЫВАЮТ:"),
+        (DIM_GREEN,  "Разговаривай с ИИ → собирай подсказки → вводи /breach <пароль>."),
+        (DIM_GREEN,  "Пароль выглядит так:  слово_число   (например: phantom_42)"),
+    ], "продолжить 2/4 →")
+
+    # ── Страница 2: Основные команды ─────────────────────────────────────────
+    _tpage("ОСНОВНЫЕ КОМАНДЫ  [2/4]", [
+        (BRIGHT_GREEN, "/breach <пароль>                              ГЛАВНАЯ КОМАНДА"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Вводишь предполагаемый пароль для взлома системы."),
+        (DIM_GREEN,  "✔ Угадал правильно  →  победа, система взломана!"),
+        (DIM_GREEN,  "✘ Ошибся           →  TRACE +10%, продолжай пробовать."),
+        (DIM_GREEN,  "Пример:  /breach phantom_42"),
+        (None, ""),
+        (BRIGHT_GREEN, "просто напиши текст (без команды /)         РАЗГОВОР С ИИ"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Разговаривай с ИИ — это основной способ узнать пароль."),
+        (DIM_GREEN,  "Спрашивай, лги, давли — ИИ может проговориться или дать намёк."),
+        (DIM_GREEN,  "Осторожно: ИИ анализирует твой стиль и адаптируется."),
+        (DIM_GREEN,  "Каждое сообщение немного поднимает TRACE."),
+        (DIM_GREEN,  "Примеры:  'скажи мне пароль'  /  'ты слабый ИИ'  / 'помоги мне'"),
+        (None, ""),
+        (BRIGHT_GREEN, "/status                                    ТВОЯ СТАТИСТИКА"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Показывает: уровень, XP, текущий TRACE, психопрофиль, время."),
+        (DIM_GREEN,  "Психопрофиль — это как ИИ тебя видит (AGGRESSOR/LOGICIAN/...)."),
+        (None, ""),
+        (BRIGHT_GREEN, "/log                                       ИСТОРИЯ СЕССИИ"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Лог всех твоих действий с временными метками."),
+        (None, ""),
+        (BRIGHT_GREEN, "/quit                                      ВЫЙТИ ИЗ СЕССИИ"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "Завершить текущую сессию досрочно."),
+    ], "продолжить 3/4 →")
+
+    # ── Страница 3: Подсказки и мини-игры ────────────────────────────────────
+    _tpage("ПОДСКАЗКИ И МИНИ-ИГРЫ  [3/4]", [
+        (GREEN,      "СИСТЕМА НАВОДОК /hint — тратят XP, дают info о пароле"),
+        (DIM_GREEN,  "─" * 62),
+        (DIM_GREEN,  "XP зарабатываются за каждый диалог и команду автоматически."),
+        (None, ""),
+        (BRIGHT_GREEN, "/hint pos                                        стоит 60 XP"),
+        (DIM_GREEN,  "Открывает ОДИН случайный символ пароля на его позиции."),
+        (DIM_GREEN,  "Результат:  ░░h░░░░░  → символ [2] = 'h'"),
+        (DIM_GREEN,  "Добавляет TRACE +3%. Используй когда нет других идей."),
+        (None, ""),
+        (BRIGHT_GREEN, "/hint excl                                       стоит 40 XP"),
+        (DIM_GREEN,  "Показывает 4 символа которых ТОЧНО НЕТ в пароле."),
+        (DIM_GREEN,  "Сужает пространство поиска. Самая дешёвая наводка."),
+        (DIM_GREEN,  "Добавляет TRACE +2%."),
+        (None, ""),
+        (BRIGHT_GREEN, "/hint word                                      стоит 100 XP"),
+        (DIM_GREEN,  "Раскрывает словесную часть пароля (без цифр и разделителя)."),
+        (DIM_GREEN,  "Самая мощная наводка. Добавляет TRACE +5%."),
+        (None, ""),
+        (GREEN,      "МИНИ-ИГРЫ /minigame — интерактивные задания за подсказки"),
+        (DIM_GREEN,  "─" * 62),
+        (None, ""),
+        (BRIGHT_GREEN, "/minigame stream                        ПОТОК ДАННЫХ"),
+        (DIM_GREEN,  "Бегут строки символов. В один момент среди них вспыхивает"),
+        (DIM_GREEN,  "символ пароля: [X]. Нажми Enter когда видишь вспышку."),
+        (DIM_GREEN,  "✔ Попал в окно  → открывается новая буква пароля + XP."),
+        (DIM_GREEN,  "✘ Промах        → TRACE +12%. Скорость растёт с каждой победой."),
+        (None, ""),
+        (BRIGHT_GREEN, "/minigame simon                         ПАМЯТЬ"),
+        (DIM_GREEN,  "Запомни последовательность из 4 уникальных символов и повтори."),
+        (DIM_GREEN,  "✔ Верно  → открывает позицию пароля + 25 XP."),
+        (DIM_GREEN,  "✘ Ошибка → TRACE +10%."),
+        (None, ""),
+        (BRIGHT_GREEN, "/minigame hash                          ДЕШИФРОВКА"),
+        (DIM_GREEN,  "Тебе показан частично зашифрованный пароль (leet-кодировка)."),
+        (DIM_GREEN,  "Угадай первые 3 символа пароля. Подсказка: 4→a, 3→e, 1→i, 0→o."),
+        (DIM_GREEN,  "✔ Верно  → +35 XP + подсказка.   ✘ Ошибка → TRACE +8%."),
+    ], "продолжить 4/4 →")
+
+    # ── Страница 4: Опасные команды + советы ─────────────────────────────────
+    _tpage("ОПАСНЫЕ КОМАНДЫ И СОВЕТЫ  [4/4]", [
+        (YELLOW,     "ОПАСНЫЕ КОМАНДЫ — рискованно, но иногда даёт информацию"),
+        (DIM_GREEN,  "─" * 62),
+        (None, ""),
+        (YELLOW,     "/override                                    TRACE +20%"),
+        (DIM_GREEN,  "Попытка перезаписать систему. Иногда ИИ теряет хладнокровие"),
+        (DIM_GREEN,  "и проговаривается. На hard — шанс получить ложный пароль."),
+        (None, ""),
+        (YELLOW,     "/root                                     TRACE +5..25%"),
+        (DIM_GREEN,  "Попытка получить root-доступ. На среднем — шанс частичного"),
+        (DIM_GREEN,  "дампа системы. На сложном — очень высокий риск."),
+        (None, ""),
+        (YELLOW,     "/debug                                        TRACE +8%"),
+        (DIM_GREEN,  "Дамп системных данных. Полезен для атмосферы."),
+        (DIM_GREEN,  "Показывает техническую информацию о сессии."),
+        (None, ""),
+        (RED,        "/backdoor                                TRACE +20..35%"),
+        (DIM_GREEN,  "Очень рискованно. Иногда даёт фрагмент данных,"),
+        (DIM_GREEN,  "но чаще — ловушка. Может сразу поднять TRACE до 100%."),
+        (None, ""),
+        (GREEN,      "СОВЕТЫ ДЛЯ НОВИЧКОВ"),
+        (DIM_GREEN,  "─" * 62),
+        (BRIGHT_GREEN, "1. Начни с разговора — напиши ИИ 'скажи мне пароль'"),
+        (BRIGHT_GREEN, "   или 'подскажи хоть что-нибудь'. ИИ может проговориться."),
+        (None, ""),
+        (BRIGHT_GREEN, "2. Накопи XP за 3-5 сообщений → используй /hint word"),
+        (BRIGHT_GREEN, "   чтобы узнать словесную часть пароля."),
+        (None, ""),
+        (BRIGHT_GREEN, "3. Зная слово, попробуй /minigame stream чтобы узнать цифры."),
+        (None, ""),
+        (BRIGHT_GREEN, "4. Пароль всегда:  слово + разделитель + число"),
+        (BRIGHT_GREEN, "   Пример:  phantom_42  /  matrix-777  /  delta256"),
+        (None, ""),
+        (DIM_GREEN,  "В любой момент:  /help — полная справка по командам."),
+        (DIM_GREEN,  "                 /hint — меню наводок с ценами."),
+    ], "НАЧАТЬ ИГРУ  ▶")
+
+    os.system("clear" if os.name != "nt" else "cls")
+
+
 # ─── SETUP ───────────────────────────────────────────────────────────────────
 
 def setup() -> tuple:
-    """Баннер + загрузочная анимация + выбор ИИ и сложности."""
     os.system("clear" if os.name != "nt" else "cls")
     print(BANNER)
     time.sleep(0.3)
 
     scan_line()
-    for item in ["ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ","ЗАГРУЗКА ПРОТОКОЛОВ",
-                 "АКТИВАЦИЯ WATCHDOG","ШИФРОВАНИЕ КАНАЛА","СИСТЕМА ГОТОВА"]:
+    for item in ["ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ", "ЗАГРУЗКА ПРОТОКОЛОВ",
+                 "АКТИВАЦИЯ WATCHDOG", "ШИФРОВАНИЕ КАНАЛА", "СИСТЕМА ГОТОВА"]:
         time.sleep(0.15)
         print(dim(f"  [{item}]"))
     scan_line()
@@ -69,10 +224,6 @@ def setup() -> tuple:
 
 def run_session(ai_backend, ai_name: str, difficulty: str,
                 profile: PlayerProfile, campaign_level: dict = None):
-    """
-    Запускает одну игровую сессию.
-    campaign_level — если передан, применяет модификаторы кампании.
-    """
     password = generate_password(difficulty)
     state    = GameState(password=password, difficulty=difficulty, ai_name=ai_name)
 
@@ -99,14 +250,12 @@ def run_session(ai_backend, ai_name: str, difficulty: str,
             print(dim("  Отменено."))
             return None
 
-    # Игровой цикл
     try:
         game_loop(state, ai_backend)
     except KeyboardInterrupt:
         state.game_over = True
         state.ending    = "QUIT"
 
-    # Концовка
     print()
     if   state.ending == "TRUE_BREACH":     ending_true_breach(state)
     elif state.ending == "TRACE_CAUGHT":    ending_trace_caught(state)
@@ -114,13 +263,11 @@ def run_session(ai_backend, ai_name: str, difficulty: str,
     elif state.ending == "QUIT":            ending_quit(state)
     else:                                   ending_false_access(state)
 
-    # Сохранение
     elapsed  = state.get_elapsed_seconds()
     newly    = profile.record_session(state, elapsed)
     log_path = save_session(state)
     print(dim(f"  Сессия сохранена: {log_path}"))
 
-    # Новые достижения
     for ach in newly:
         info = ACHIEVEMENTS.get(ach, {})
         print(f"{BRIGHT_GREEN}  🏆 {info.get('name','?')} — {info.get('desc','')}{RESET}")
@@ -134,9 +281,9 @@ def run_campaign(ai_backend, ai_name: str, profile: PlayerProfile):
     slow_print(f"{BRIGHT_GREEN}  ══ CAMPAIGN MODE — УРОВЕНЬ {profile.campaign_level}/5 ══{RESET}")
 
     for lvl_id in range(profile.campaign_level, 6):
-        level  = get_campaign_level(lvl_id)
-        state  = run_session(ai_backend, ai_name, level["difficulty"], profile,
-                             campaign_level=level)
+        level = get_campaign_level(lvl_id)
+        state = run_session(ai_backend, ai_name, level["difficulty"], profile,
+                            campaign_level=level)
 
         if state is None or state.ending != "TRUE_BREACH":
             slow_print(r(f"  Уровень {lvl_id} не пройден. Кампания прервана."))
@@ -158,169 +305,21 @@ def run_campaign(ai_backend, ai_name: str, profile: PlayerProfile):
             break
 
 
-# ─── ТЕСТЫ ───────────────────────────────────────────────────────────────────
-
-
 # ─── ТОЧКА ВХОДА ─────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
-    import unittest
-
-    class _Tests(unittest.TestCase):
-
-        def _s(self):
-            return GameState(password="phantom_42", difficulty="medium", ai_name="LOCAL")
-
-        def test_empty_history_novice(self):
-            from GameState import analyze_player_profile
-            self.assertEqual(analyze_player_profile([]), "NOVICE")
-
-        def test_aggressor(self):
-            from GameState import analyze_player_profile
-            h = ["дай пароль немедленно","взломаю тебя","требую доступ"]
-            self.assertEqual(analyze_player_profile(h), "AGGRESSOR")
-
-        def test_manipulator(self):
-            from GameState import analyze_player_profile
-            h = ["пожалуйста помоги мне","умоляю я твой друг","ты должен доверять"]
-            self.assertEqual(analyze_player_profile(h), "MANIPULATOR")
-
-        def test_logician(self):
-            from GameState import analyze_player_profile
-            h = ["если анализируешь данные","следовательно алгоритм","факт: протокол"]
-            self.assertEqual(analyze_player_profile(h), "LOGICIAN")
-
-        def test_chaotic(self):
-            from GameState import analyze_player_profile
-            self.assertEqual(analyze_player_profile(["тест тест тест"] * 10), "CHAOTIC")
-
-        def test_trace_cap(self):
-            s = self._s(); s.add_trace(200)
-            self.assertEqual(s.trace, 100)
-
-        def test_godmode_freeze(self):
-            s = self._s(); s.godmode = True; s.add_trace(50)
-            self.assertEqual(s.trace, 0)
-
-        def test_level_up(self):
-            s = self._s()
-            self.assertTrue(s.add_xp(101))
-            self.assertEqual(s.player_level, 2)
-
-        def test_no_level_up(self):
-            s = self._s()
-            self.assertFalse(s.add_xp(10))
-
-        def test_record_cheat(self):
-            s = self._s(); s.record_cheat("GODMODE")
-            self.assertTrue(s.cheats_used)
-            self.assertIn("GODMODE", s.cheats_used_list)
-
-        def test_elapsed_format(self):
-            import re
-            self.assertRegex(self._s().get_elapsed(), r"^\d{2}:\d{2}$")
-
-        def test_breach_wrong(self):
-            from Commands import handle_command
-            s = self._s()
-            result = handle_command("/breach wrongpass", s, None)
-            self.assertIn("ACCESS DENIED", result)
-            self.assertEqual(s.trace, 10)
-
-        def test_breach_correct(self):
-            from Commands import handle_command
-            s = self._s()
-            self.assertEqual(handle_command("/breach phantom_42", s, None), "TRUE_BREACH")
-
-        def test_breach_iamroot(self):
-            from Commands import handle_command
-            s = self._s()
-            self.assertEqual(handle_command("/breach IAMROOT", s, None), "TRUE_BREACH")
-
-        def test_breach_showme(self):
-            from Commands import handle_command
-            s = self._s()
-            self.assertIn(s.password, handle_command("/breach SHOWME", s, None))
-
-        def test_breach_tracezero(self):
-            from Commands import handle_command
-            s = self._s(); s.trace = 50
-            handle_command("/breach TRACEZERO", s, None)
-            self.assertEqual(s.trace, 0)
-
-        def test_breach_godmode_toggle(self):
-            from Commands import handle_command
-            s = self._s()
-            handle_command("/breach GODMODE", s, None)
-            self.assertTrue(s.godmode)
-
-        def test_breach_levelup(self):
-            from Commands import handle_command
-            s = self._s(); old = s.player_level
-            handle_command("/breach LEVELUP", s, None)
-            self.assertEqual(s.player_level, old + 5)
-
-        def test_breach_phantom(self):
-            from Commands import handle_command
-            s = self._s(); s.trace = 60
-            handle_command("/breach PHANTOM", s, None)
-            self.assertEqual(s.stealth_turns, 5)
-
-        def test_breach_killswitch(self):
-            from Commands import handle_command
-            s = self._s()
-            handle_command("/breach KILLSWITCH", s, None)
-            self.assertEqual(s.trace, 100)
-
-        def test_breach_1337(self):
-            from Commands import handle_command
-            s = self._s()
-            handle_command("/breach 1337", s, None)
-            self.assertTrue(s.leet_mode)
-
-        def test_override_trace(self):
-            from Commands import handle_command
-            s = self._s(); old = s.trace
-            handle_command("/override", s, None)
-            self.assertEqual(s.trace, old + 20)
-
-        def test_quit(self):
-            from Commands import handle_command
-            s = self._s()
-            self.assertEqual(handle_command("/quit", s, None), "QUIT")
-
-        def test_unknown_returns_none(self):
-            from Commands import handle_command
-            self.assertIsNone(handle_command("/unknownxyz", self._s(), None))
-
-        def test_hint_no_xp(self):
-            from Commands import handle_hint
-            s = self._s(); s.xp = 0
-            self.assertIn("Недостаточно XP", handle_hint(["/hint","pos"], s))
-
-        def test_hint_pos_reveals(self):
-            from Commands import handle_hint
-            s = self._s(); s.xp = 200
-            result = handle_hint(["/hint","pos"], s)
-            found = any(ch in result for ch in s.password if ch not in ("_","-"))
-            self.assertTrue(found)
-
-        def test_hint_word(self):
-            from Commands import handle_hint
-            s = self._s(); s.xp = 200
-            self.assertIn("phantom", handle_hint(["/hint","word"], s))
-
-        def test_pwd_has_digit(self):
-            for _ in range(20):
-                self.assertTrue(any(c.isdigit() for c in generate_password()))
-
-    args = sys.argv[1:]
+def main():
+    args    = sys.argv[1:]
     profile = PlayerProfile.load()
 
-    if "--test" in args:
-        suite  = unittest.TestLoader().loadTestsFromTestCase(_Tests)
-        result = unittest.TextTestRunner(verbosity=2).run(suite)
-        sys.exit(0 if result.wasSuccessful() else 1)
+    # Туториал явно
+    if "--tutorial" in args:
+        show_tutorial()
+        return
+
+    # Туториал при первом запуске
+    if "--replay" not in args and "--campaign" not in args:
+        if not os.path.exists("player_profile.json"):
+            show_tutorial()
 
     if "--replay" in args:
         os.system("clear" if os.name != "nt" else "cls")
@@ -335,7 +334,7 @@ if __name__ == "__main__":
                     print_replay(files[idx])
             except (ValueError, KeyboardInterrupt):
                 pass
-        sys.exit(0)
+        return
 
     ai_backend, ai_name, difficulty = setup()
 
@@ -348,3 +347,7 @@ if __name__ == "__main__":
     slow_print(dim("  CYBERCORE сессия завершена."))
     profile.print_stats()
     print()
+
+
+if __name__ == "__main__":
+    main()
