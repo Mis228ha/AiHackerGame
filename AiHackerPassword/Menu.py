@@ -54,42 +54,109 @@ def _print_ai_menu():
     scan_line()
 
 
+# Префиксы настоящих API-ключей для каждого провайдера
+_KEY_PREFIXES = {
+    "claude":   ["sk-ant-"],
+    "openai":   ["sk-"],
+    "gemini":   ["AIza"],
+    "groq":     ["gsk_"],
+    "mistral":  [""],          # у Mistral нет стандартного префикса
+    "deepseek": ["sk-"],
+}
+
+
+def _looks_like_api_key(key: str, choice: str) -> tuple[bool, str]:
+    """
+    Проверяет похож ли ввод на настоящий API-ключ.
+    Возвращает (ok, причина_отказа).
+    """
+    min_len  = _KEY_MIN_LEN[choice]
+    prefixes = _KEY_PREFIXES.get(choice, [""])
+
+    # Слишком короткий
+    if len(key) < min_len:
+        return False, f"слишком короткий (введено {len(key)}, нужно мин. {min_len})"
+
+    # Только цифры — явно не ключ
+    if key.isdigit():
+        return False, "состоит только из цифр"
+
+    # Только буквы одного регистра короткие — рандомный текст
+    if len(key) < 20 and key.isalpha():
+        return False, "похоже на случайный текст"
+
+    # Нет букв вообще — мусор
+    if not any(c.isalpha() for c in key):
+        return False, "нет букв — не похоже на API-ключ"
+
+    # Проверка префикса (только если провайдер требует конкретный)
+    if prefixes and prefixes[0]:  # если список не пустой и не [""]
+        if not any(key.startswith(p) for p in prefixes):
+            expected = " или ".join(f"'{p}...'" for p in prefixes)
+            return False, f"неверный префикс (ожидается {expected})"
+
+    return True, ""
+
+
 def _ask_api_key(choice: str) -> tuple:
     """
-    Запрашивает API-ключ с валидацией.
-    Возвращает (backend, name) или (None, None) если нужно вернуться к выбору ИИ.
+    Запрашивает API-ключ с валидацией формата.
+    При вводе случайного мусора предлагает локальный режим.
+    Возвращает (backend, name) или (None, None) чтобы вернуться к выбору ИИ.
     """
-    name    = _BACKEND_NAMES[choice]
-    min_len = _KEY_MIN_LEN[choice]
+    name     = _BACKEND_NAMES[choice]
+    min_len  = _KEY_MIN_LEN[choice]
+    prefixes = _KEY_PREFIXES.get(choice, [""])
+    prefix_hint = prefixes[0] if prefixes and prefixes[0] else "—"
 
     print(g(f"  Выбран: {name}"))
-    print(dim(f"  Введи API-ключ (мин. {min_len} символов)."))
+    print(dim(f"  Введи API-ключ. Минимум {min_len} символов."))
+    if prefix_hint != "—":
+        print(dim(f"  Формат ключа: {prefix_hint}..."))
     print(dim("  Enter без ввода → вернуться к выбору ИИ."))
     print()
 
-    attempts = 0
     while True:
         try:
             api_key = input(f"{BRIGHT_GREEN}  API-KEY > {RESET}").strip()
         except (KeyboardInterrupt, EOFError):
             print(); sys.exit(0)
 
-        # Пустой ввод — вернуться назад
+        # Пустой ввод — назад
         if not api_key:
             print(dim("  Возврат к выбору ИИ..."))
             return None, None
 
-        # Слишком короткий или явно не ключ (нет цифробукв)
-        has_alnum = any(c.isalnum() for c in api_key)
-        if len(api_key) < min_len or not has_alnum:
-            attempts += 1
-            print(r(f"  Ключ выглядит некорректно (слишком короткий или неверный формат)."))
-            if attempts >= 2:
-                print(y("  Подсказка: ключи обычно выглядят как 'sk-ant-api...' или 'AIzaSy...'"))
-                print(y("  Нажми Enter без ввода чтобы выбрать другой ИИ или локальный режим."))
+        ok, reason = _looks_like_api_key(api_key, choice)
+
+        if not ok:
+            # Явно не ключ — предлагаем локальный режим
+            print()
+            print(f"{RED}  ✘ Это не похоже на API-ключ: {reason}.{RESET}")
+            print(f"{DIM_GREEN}  Настоящий ключ {name} выглядит примерно так: "
+                  f"{YELLOW}{prefix_hint}{'x' * 20}...{RESET}")
+            print()
+            print(f"{YELLOW}  Что сделать?{RESET}")
+            print(f"{GREEN}  1{RESET} {DIM_GREEN}— ввести ключ ещё раз{RESET}")
+            print(f"{GREEN}  2{RESET} {DIM_GREEN}— переключиться на локальный режим (без API){RESET}")
+            print(f"{GREEN}  3{RESET} {DIM_GREEN}— вернуться к выбору ИИ{RESET}")
+            print()
+            try:
+                sub = input(f"{BRIGHT_GREEN}  Выбор [1/2/3]: {RESET}").strip()
+            except (KeyboardInterrupt, EOFError):
+                print(); sys.exit(0)
+
+            if sub == "2":
+                print(dim("  Переключено на локальный режим."))
+                return None, "LOCAL"
+            elif sub == "3":
+                print(dim("  Возврат к выбору ИИ..."))
+                return None, None
+            # sub == "1" или что угодно → просто продолжаем цикл
+            print()
             continue
 
-        # Ключ выглядит OK — создаём бэкенд
+        # Ключ прошёл проверку формата — создаём бэкенд
         return _BACKENDS[choice](api_key=api_key), name
 
 
@@ -134,8 +201,12 @@ def select_ai_backend() -> tuple:
         # ── API-бэкенды: запрашиваем ключ ────────────────────────────────────
         backend, name = _ask_api_key(choice)
 
+        if backend is None and name == "LOCAL":
+            # Пользователь выбрал локальный режим вместо API
+            return None, "LOCAL"
+
         if backend is None:
-            # Пользователь нажал Enter без ввода — показываем меню заново
+            # Пользователь нажал Enter или выбрал вернуться — показываем меню заново
             print()
             print(y("  Выбери другой ИИ или выбери '8' для локального режима (без API)."))
             continue

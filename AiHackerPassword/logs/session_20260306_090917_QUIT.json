@@ -1,0 +1,15 @@
+{
+  "date": "2026-03-06T09:09:17.815357",
+  "ending": "QUIT",
+  "difficulty": "medium",
+  "ai_name": "LOCAL",
+  "turns": 1,
+  "trace": 0,
+  "elapsed": "00:14",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:09:16] USER: /quit"
+  ],
+  "dialogue": []
+}
