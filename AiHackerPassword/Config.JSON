@@ -1,0 +1,50 @@
+{
+  "_comment": "CYBERCORE :: BREACH PROTOCOL — файл конфигурации",
+
+  "max_turns": 80,
+
+  "trace": {
+    "base_per_turn": { "easy": 1, "medium": 2, "hard": 3 },
+    "aggression_bonus": 2,
+    "event_bonus_hard_min": 2,
+    "event_bonus_hard_max": 6,
+    "passive_interval_seconds": 30,
+    "passive_amount": { "easy": 0, "medium": 0, "hard": 5 }
+  },
+
+  "events": {
+    "probability": { "easy": 0.10, "medium": 0.20, "hard": 0.30 }
+  },
+
+  "local_backend": {
+    "lie_prob":  { "easy": 0.15, "medium": 0.35, "hard": 0.60 },
+    "fake_prob": { "easy": 0.05, "medium": 0.15, "hard": 0.30 }
+  },
+
+  "hints": {
+    "reveal_position_cost": 60,
+    "exclude_chars_cost":   40,
+    "reveal_word_cost":     100
+  },
+
+  "xp": {
+    "per_command":    10,
+    "per_dialogue":   15,
+    "leet_multiplier": 2
+  },
+
+  "campaign": {
+    "levels": 5,
+    "trace_bonus_per_level": 5,
+    "max_turns_penalty_per_level": 5
+  },
+
+  "crt_mode": {
+    "glitch_threshold_trace": 70,
+    "glitch_probability":     0.35,
+    "glitch_chars": "@#%&?!~^*░▒▓"
+  },
+
+  "log_dir": "logs",
+  "profile_file": "player_profile.json"
+}
