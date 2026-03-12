@@ -1,0 +1,23 @@
+{
+  "date": "2026-03-12T09:11:27.136463",
+  "ending": "SYSTEM_COLLAPSE",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 6,
+  "trace": 100,
+  "elapsed": "01:18",
+  "cheats": true,
+  "cheats_list": [
+    "KILLSWITCH"
+  ],
+  "log": [
+    "[09:10:17] USER: /minigame",
+    "[09:10:29] USER: /minigame sql",
+    "[09:10:43] MINIGAME sql: WIN",
+    "[09:11:11] USER: /hint word",
+    "[09:11:13] USER: /status",
+    "[09:11:15] USER: /help",
+    "[09:11:23] USER: /breach KILLSWITCH"
+  ],
+  "dialogue": []
+}

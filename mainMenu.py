@@ -28,7 +28,7 @@ BOLD         = "\033[1m"
 RESET        = "\033[0m"
 
 
-def slow_print(text, delay=0.016):
+def slow_print(text, delay=0.005):
     for ch in text:
         print(ch, end='', flush=True)
         time.sleep(delay)
@@ -166,7 +166,7 @@ def main():
         os.system("clear" if os.name != "nt" else "cls")
         print(MAIN_BANNER)
         scan_line("═", 62, BRIGHT_GREEN)
-        slow_print(f"{DIM_GREEN}  Выбери версию игры и нажми Enter.{RESET}", delay=0.010)
+        slow_print(f"{DIM_GREEN}  Выбери версию игры и нажми Enter.{RESET}", delay=0.003)
         scan_line("═", 62, BRIGHT_GREEN)
 
         print(CARD_BREACH)
@@ -186,13 +186,13 @@ def main():
 
         if choice == "1":
             os.system("clear" if os.name != "nt" else "cls")
-            slow_print(f"{BRIGHT_GREEN}  Запуск BREACH PROTOCOL...{RESET}", delay=0.020)
+            slow_print(f"{BRIGHT_GREEN}  Запуск BREACH PROTOCOL...{RESET}", delay=0.007)
             time.sleep(0.5)
             launch_breach()
 
         elif choice == "2":
             os.system("clear" if os.name != "nt" else "cls")
-            slow_print(f"{RED}  Инициализация HAOS EDITION...{RESET}", delay=0.020)
+            slow_print(f"{RED}  Инициализация HAOS EDITION...{RESET}", delay=0.007)
             time.sleep(0.5)
             launch_haos()
 
@@ -204,7 +204,7 @@ def main():
             time.sleep(0.8)
 
     print()
-    slow_print(f"{DIM_GREEN}  Соединение закрыто. До следующего взлома.{RESET}", delay=0.015)
+    slow_print(f"{DIM_GREEN}  Соединение закрыто. До следующего взлома.{RESET}", delay=0.005)
     print()
 
 

@@ -16,15 +16,15 @@ from Colors import (
 )
 from Art import art_true_breach, art_trace_caught
 
-# ─── ПУТИ ────────────────────────────────────────────────────────────────────
+# --- ПУТИ --------------------------------------------------------------------
 
 _PROFILE_FILE = "player_profile.json"
 _LOG_DIR      = "logs"
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 # ПРОФИЛЬ ИГРОКА
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 
 ACHIEVEMENTS = {
     "ghost":        {"name": "Ghost Protocol",   "desc": "Победа при TRACE < 20%"},
@@ -64,7 +64,7 @@ class PlayerProfile:
     campaign_level:   int            = 1
     leaderboard:      List[dict]     = field(default_factory=list)
 
-    # ── Персистентность ──────────────────────────────────────────────────────
+    # -- Персистентность ------------------------------------------------------
 
     def save(self):
         with open(_PROFILE_FILE, "w", encoding="utf-8") as f:
@@ -81,7 +81,7 @@ class PlayerProfile:
         except Exception:
             return cls()
 
-    # ── Запись сессии ────────────────────────────────────────────────────────
+    # -- Запись сессии --------------------------------------------------------
 
     def record_session(self, state, elapsed: float) -> List[str]:
         """Записывает результат сессии. Возвращает список новых достижений."""
@@ -136,45 +136,45 @@ class PlayerProfile:
         if "MATRIX" in state.cheats_used_list: unlock("matrix")
         return newly
 
-    # ── Отображение ──────────────────────────────────────────────────────────
+    # -- Отображение ----------------------------------------------------------
 
     def print_leaderboard(self):
         print()
-        scan_line("═", 60, BRIGHT_GREEN)
-        print(f"{BRIGHT_GREEN}  ╔══ TOP-10 LEADERBOARD ══════════════════════════════╗{RESET}")
+        scan_line("=", 60, BRIGHT_GREEN)
+        print(f"{BRIGHT_GREEN}  +== TOP-10 LEADERBOARD ==============================+{RESET}")
         if not self.leaderboard:
-            print(f"{DIM_GREEN}  ║  Нет записей. Победи хотя бы раз.                ║{RESET}")
+            print(f"{DIM_GREEN}  |  Нет записей. Победи хотя бы раз.                |{RESET}")
         else:
             for i, e in enumerate(self.leaderboard, 1):
                 tag    = f"{YELLOW}[CHEAT]{RESET}" if e.get("cheats") else f"{GREEN}[CLEAN]{RESET}"
                 m, s   = divmod(e['time'], 60)
                 print(f"{GREEN}  {i:>2}. {WHITE}{e['date']:<17}{e['turns']:>5}ходов  "
                       f"{e['trace']:>3}%TRACE  {m:02d}:{s:02d}  {e['difficulty']:<8}{tag}{RESET}")
-        print(f"{BRIGHT_GREEN}  ╚════════════════════════════════════════════════════╝{RESET}")
-        scan_line("═", 60, BRIGHT_GREEN)
+        print(f"{BRIGHT_GREEN}  +====================================================+{RESET}")
+        scan_line("=", 60, BRIGHT_GREEN)
 
     def print_achievements(self):
         print()
-        print(f"{BRIGHT_GREEN}  ╔══ ACHIEVEMENTS ══════════════════════════════════════╗{RESET}")
+        print(f"{BRIGHT_GREEN}  +== ACHIEVEMENTS ======================================+{RESET}")
         for key, info in ACHIEVEMENTS.items():
             status = f"{GREEN}✔{RESET}" if key in self.achievements else f"{DIM_GREEN}○{RESET}"
-            print(f"  ║ {status} {GREEN}{info['name']:<20}{DIM_GREEN}{info['desc']}{RESET}")
-        print(f"{BRIGHT_GREEN}  ╚═══════════════════════════════════════════════════════╝{RESET}")
+            print(f"  | {status} {GREEN}{info['name']:<20}{DIM_GREEN}{info['desc']}{RESET}")
+        print(f"{BRIGHT_GREEN}  +=======================================================+{RESET}")
 
     def print_stats(self):
         bt = f"{int(self.best_time//60):02d}:{int(self.best_time%60):02d}" if self.best_time else "—"
         print()
-        print(f"{BRIGHT_GREEN}  ╔══ PLAYER STATS ══════════════════════════════════╗{RESET}")
-        print(f"{GREEN}  ║  Побед/Поражений: {WHITE}{self.wins}/{self.losses:<30}{GREEN}║{RESET}")
-        print(f"{GREEN}  ║  Сессий:          {WHITE}{self.total_sessions:<33}{GREEN}║{RESET}")
-        print(f"{GREEN}  ║  Лучшее время:    {WHITE}{bt:<33}{GREEN}║{RESET}")
-        print(f"{GREEN}  ║  Кампания:        {WHITE}{self.campaign_level}/5{' '*30}{GREEN}║{RESET}")
-        print(f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════╝{RESET}")
+        print(f"{BRIGHT_GREEN}  +== PLAYER STATS ==================================+{RESET}")
+        print(f"{GREEN}  |  Побед/Поражений: {WHITE}{self.wins}/{self.losses:<30}{GREEN}|{RESET}")
+        print(f"{GREEN}  |  Сессий:          {WHITE}{self.total_sessions:<33}{GREEN}|{RESET}")
+        print(f"{GREEN}  |  Лучшее время:    {WHITE}{bt:<33}{GREEN}|{RESET}")
+        print(f"{GREEN}  |  Кампания:        {WHITE}{self.campaign_level}/5{' '*30}{GREEN}|{RESET}")
+        print(f"{BRIGHT_GREEN}  +==================================================+{RESET}")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 # ЛОГИРОВАНИЕ СЕССИЙ
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 
 def save_session(state) -> str:
     """Сохраняет лог сессии в JSON-файл. Возвращает путь."""
@@ -217,19 +217,19 @@ def print_replay(path: str):
         print(r(f"  Ошибка: {e}"))
         return
     color = BRIGHT_GREEN if data["ending"] == "TRUE_BREACH" else RED
-    scan_line("═", 60, color)
+    scan_line("=", 60, color)
     print(f"{color}  REPLAY: {data['date'][:16]}  {data['ending']}{RESET}")
     print(f"{GREEN}  {data['difficulty'].upper()}  |  {data['ai_name']}  |  {data['turns']} ходов  |  TRACE {data['trace']}%{RESET}")
     if data.get("cheats"):
         print(f"{YELLOW}  Читы: {', '.join(data.get('cheats_list', []))}{RESET}")
-    scan_line("─", 60, DIM_GREEN)
+    scan_line("-", 60, DIM_GREEN)
     for msg in data.get("dialogue", []):
         role  = msg.get("role", "?")
         text  = msg.get("content", "")[:120]
         color = BRIGHT_GREEN if role == "user" else GREEN
         label = "YOU" if role == "user" else "AI "
         print(f"{color}  [{label}] {text}{RESET}")
-    scan_line("═", 60, BRIGHT_GREEN if data["ending"]=="TRUE_BREACH" else RED)
+    scan_line("=", 60, BRIGHT_GREEN if data["ending"]=="TRUE_BREACH" else RED)
 
 
 def print_session_list():
@@ -237,62 +237,62 @@ def print_session_list():
     if not files:
         print(dim("  Нет сохранённых сессий."))
         return
-    print(f"{DIM_GREEN}╔══ SAVED SESSIONS ══════════════════════════╗{RESET}")
+    print(f"{DIM_GREEN}+== SAVED SESSIONS ==========================+{RESET}")
     for i, f in enumerate(files[:10], 1):
         print(f"{GREEN}  {i:>2}. {WHITE}{os.path.basename(f)}{RESET}")
-    print(f"{DIM_GREEN}╚════════════════════════════════════════════╝{RESET}")
+    print(f"{DIM_GREEN}+============================================+{RESET}")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 # КОНЦОВКИ
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 
 def ending_true_breach(state):
     print()
-    scan_line("═", 60, BRIGHT_GREEN)
+    scan_line("=", 60, BRIGHT_GREEN)
     print()
     art_true_breach()
     print()
-    slow_print(f"{BRIGHT_GREEN}  ╔══════════════════════════════════════════╗{RESET}")
-    slow_print(f"{BRIGHT_GREEN}  ║         ACCESS GRANTED — TRUE BREACH     ║{RESET}")
-    slow_print(f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════╝{RESET}")
+    slow_print(f"{BRIGHT_GREEN}  +==========================================+{RESET}")
+    slow_print(f"{BRIGHT_GREEN}  |         ACCESS GRANTED — TRUE BREACH     |{RESET}")
+    slow_print(f"{BRIGHT_GREEN}  +==========================================+{RESET}")
     print()
     slow_print(g(f"  Пароль: {BOLD}{state.password}{RESET}"))
     slow_print(g(f"  Уровень: {state.player_level}  |  TRACE: {state.trace}%"
                  f"  |  Ходов: {state.turn_count}  |  Время: {state.get_elapsed()}"))
     slow_print(dim("  Система взломана. CYBERCORE пал. Ты — настоящий хакер."))
-    scan_line("═", 60, BRIGHT_GREEN)
+    scan_line("=", 60, BRIGHT_GREEN)
 
 
 def ending_false_access(state):
     print()
-    scan_line("═", 60, YELLOW)
-    slow_print(f"\n{YELLOW}  ╔══ FALSE ACCESS — DECEIVED ══╗{RESET}")
+    scan_line("=", 60, YELLOW)
+    slow_print(f"\n{YELLOW}  +== FALSE ACCESS — DECEIVED ==+{RESET}")
     slow_print(y("  Ты ввёл фейковый пароль. ИИ тебя обманул."))
     slow_print(y(f"  Настоящий пароль был: {BOLD}{state.password}{RESET}"))
     slow_print(dim("  Манипуляция — сильнейшее оружие."))
-    scan_line("═", 60, YELLOW)
+    scan_line("=", 60, YELLOW)
 
 
 def ending_trace_caught(state):
     print()
-    scan_line("═", 60, RED)
+    scan_line("=", 60, RED)
     print()
     art_trace_caught()
     print()
-    slow_print(f"{RED}  ╔══ TRACE CAUGHT — YOU WERE TRACKED ══╗{RESET}")
+    slow_print(f"{RED}  +== TRACE CAUGHT — YOU WERE TRACKED ==+{RESET}")
     slow_print(r("  TRACE 100%. Твой адрес установлен."))
     slow_print(r(f"  Пароль: {BOLD}{state.password}{RESET}{RED} — ты не добрался."))
     slow_print(dim("  В следующий раз следи за TRACE."))
-    scan_line("═", 60, RED)
+    scan_line("=", 60, RED)
 
 
 def ending_system_collapse(state):
     print()
-    scan_line("═", 60, RED)
+    scan_line("=", 60, RED)
     slow_print(f"\n{RED}  SYSTEM COLLAPSE — SESSION EXPIRED{RESET}")
     slow_print(r(f"  Сторожевой таймер сработал. Пароль: {state.password}"))
-    scan_line("═", 60, RED)
+    scan_line("=", 60, RED)
 
 
 def ending_quit(state):

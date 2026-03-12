@@ -1,0 +1,41 @@
+{
+  "wins": 2,
+  "losses": 2,
+  "total_sessions": 4,
+  "total_turns": 21,
+  "best_time": 50.34482932090759,
+  "best_turns": 2,
+  "min_trace_win": 0,
+  "achievements": [
+    "ghost",
+    "speedrun",
+    "paranoid",
+    "purist"
+  ],
+  "unlocked_skins": [
+    "default",
+    "cyan",
+    "red",
+    "white"
+  ],
+  "active_skin": "default",
+  "campaign_level": 1,
+  "leaderboard": [
+    {
+      "date": "2026-03-12 08:48",
+      "turns": 2,
+      "trace": 0,
+      "time": 50,
+      "difficulty": "easy",
+      "cheats": true
+    },
+    {
+      "date": "2026-03-12 09:23",
+      "turns": 6,
+      "trace": 25,
+      "time": 176,
+      "difficulty": "easy",
+      "cheats": false
+    }
+  ]
+}

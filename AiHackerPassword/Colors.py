@@ -27,7 +27,7 @@ def c(text):   return f"{CYAN}{text}{RESET}"
 def dim(text): return f"{DIM_GREEN}{text}{RESET}"
 
 
-def slow_print(text, delay=0.018):
+def slow_print(text, delay=0.006):
     """Посимвольная печать с задержкой."""
     for ch in text:
         print(ch, end='', flush=True)
@@ -35,7 +35,7 @@ def slow_print(text, delay=0.018):
     print()
 
 
-def type_print(text, delay=0.012):
+def type_print(text, delay=0.004):
     """Быстрая посимвольная печать для ответов ИИ."""
     for ch in text:
         print(ch, end='', flush=True)

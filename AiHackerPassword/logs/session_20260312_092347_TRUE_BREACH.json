@@ -1,0 +1,23 @@
+{
+  "date": "2026-03-12T09:23:47.766884",
+  "ending": "TRUE_BREACH",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 6,
+  "trace": 25,
+  "elapsed": "02:56",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:20:58] USER: /minigame",
+    "[09:21:03] USER: /minigame anagram",
+    "[09:22:33] MINIGAME anagram: FAIL",
+    "[09:22:48] USER: /breach HELIOS_404",
+    "[09:22:48] BREACH attempt: HELIOS_404 (FAILED)",
+    "[09:23:04] USER: /minigame",
+    "[09:23:09] USER: /minigame anagram",
+    "[09:23:37] MINIGAME anagram: WIN attempts=2",
+    "[09:23:43] USER: /breach helios_404"
+  ],
+  "dialogue": []
+}

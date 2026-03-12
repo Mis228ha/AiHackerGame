@@ -24,7 +24,7 @@ except ImportError:
     print("Установи customtkinter:  pip install customtkinter")
     sys.exit(1)
 
-# ─── ЦВЕТОВАЯ СХЕМА ──────────────────────────────────────────────────────────
+# --- ЦВЕТОВАЯ СХЕМА ----------------------------------------------------------
 
 COLORS = {
     "bg":          "#050a05",
@@ -32,14 +32,14 @@ COLORS = {
     "bg_input":    "#0a110a",
     "border":      "#1a3a1a",
     "border_hi":   "#39ff14",
-    "green":       "#39ff14",
-    "green_dim":   "#22aa22",
-    "green_bright":"#aaffaa",
-    "red":         "#ff4444",
-    "yellow":      "#ffe066",
-    "cyan":        "#00ffe5",
-    "white":       "#f0fff0",
-    "dim":         "#4a7a4a",
+    "green":       "#00ff41",
+    "green_dim":   "#00dd33",
+    "green_bright":"#eeffee",
+    "red":         "#ff2222",
+    "yellow":      "#ffff00",
+    "cyan":        "#00ffff",
+    "white":       "#ffffff",
+    "dim":         "#88cc88",
     "cursor":      "#39ff14",
 }
 
@@ -48,29 +48,85 @@ FONT_MONO_S= ("Courier New", 14)
 FONT_MONO_L= ("Courier New", 17, "bold")
 FONT_TITLE = ("Courier New", 22, "bold")
 
-# ─── ASCII БАННЕР ─────────────────────────────────────────────────────────────
+# --- ASCII БАННЕР -------------------------------------------------------------
 
 BANNER_SHORT = """
-  ██████╗██╗   ██╗██████╗ ███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗
- ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝
- ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝██║     ██║   ██║██████╔╝█████╗
- ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██║     ██║   ██║██╔══██╗██╔══╝
- ╚██████╗   ██║   ██████╔╝███████╗██║  ██║╚██████╗╚██████╔╝██║  ██║███████╗
-  ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+  ██████+██+   ██+██████+ ███████+██████+  ██████+ ██████+ ██████+ ███████+
+ ██+====++██+ ██++██+==██+██+====+██+==██+██+====+██+===██+██+==██+██+====+
+ ██|      +████++ ██████++█████+  ██████++██|     ██|   ██|██████++█████+
+ ██|       +██++  ██+==██+██+==+  ██+==██+██|     ██|   ██|██+==██+██+==+
+ +██████+   ██|   ██████++███████+██|  ██|+██████++██████++██|  ██|███████+
+  +=====+   +=+   +=====+ +======++=+  +=+ +=====+ +=====+ +=+  +=++======+
 """
 
-# ─── УТИЛИТА: поиск файлов ───────────────────────────────────────────────────
+# --- УТИЛИТА: поиск файлов ---------------------------------------------------
+
+def _get_base_dir() -> str:
+    """
+    Возвращает базовую директорию проекта.
+    Работает и при обычном запуске и внутри PyInstaller .exe
+    """
+    if getattr(sys, "frozen", False):
+        # Запущено как .exe — файлы в _internal рядом с exe
+        return os.path.dirname(sys.executable)
+    else:
+        # Обычный запуск — папка где лежит gui.py
+        return os.path.dirname(os.path.abspath(__file__))
+
+
+def _find_python() -> str:
+    """
+    Находит python.exe для запуска скриптов игры.
+    При обычном запуске — sys.executable.
+    При запуске из .exe (PyInstaller) — ищем python.exe в системе.
+    """
+    import shutil
+
+    # Обычный запуск — sys.executable это python.exe
+    if not getattr(sys, "frozen", False):
+        return sys.executable
+
+    # Запущено как .exe — ищем python в системе
+    # 1. Проверяем стандартные имена в PATH
+    for name in ("python", "python3", "python.exe"):
+        found = shutil.which(name)
+        if found and "Gui" not in found and "_internal" not in found:
+            return found
+
+    # 2. Ищем в типичных местах установки Python на Windows
+    import glob
+    patterns = [
+        r"C:\Python3*\python.exe",
+        r"C:\Users\*\AppData\Local\Programs\Python\Python3*\python.exe",
+        r"C:\Program Files\Python3*\python.exe",
+    ]
+    for pattern in patterns:
+        matches = glob.glob(pattern)
+        if matches:
+            return sorted(matches)[-1]  # берём последнюю версию
+
+    # 3. Fallback — попробуем просто "python"
+    return "python"
+
 
 def find_file(names: list) -> str | None:
-    """Ищет файл рекурсивно во всех подпапках глубиной до 4."""
-    base = os.path.dirname(os.path.abspath(__file__))
-    # Явные подпапки по реальной архитектуре проекта
+    """
+    Ищет файл рекурсивно во всех подпапках глубиной до 4.
+    Работает и при обычном запуске и внутри PyInstaller .exe
+    """
+    base = _get_base_dir()
+
+    # Также проверяем _internal (PyInstaller кладёт файлы туда)
+    internal = os.path.join(base, "_internal")
+
     explicit = [
         base,
+        internal,
         os.path.join(base, "AiHackerPassword"),
         os.path.join(base, "AiHackerHaos"),
+        os.path.join(internal, "AiHackerPassword"),
+        os.path.join(internal, "AiHackerHaos"),
         os.path.join(base, "hackerHaos"),
-        os.path.join(base, "hackerHAos"),
         os.path.join(base, "HackerHaos"),
         os.path.join(base, "haos"),
     ]
@@ -79,20 +135,24 @@ def find_file(names: list) -> str | None:
             p = os.path.join(d, name)
             if os.path.isfile(p):
                 return p
-    # Рекурсивный поиск по ВСЕМ подпапкам — регистронезависимо
-    for root, dirs_list, files in os.walk(base):
-        depth = root[len(base):].count(os.sep)
-        if depth > 4:
+
+    # Рекурсивный поиск — регистронезависимо
+    for search_root in [base, internal]:
+        if not os.path.isdir(search_root):
             continue
-        files_lower = {f.lower(): f for f in files}
-        for name in names:
-            match = files_lower.get(name.lower())
-            if match:
-                return os.path.join(root, match)
+        for root, _, files in os.walk(search_root):
+            depth = root[len(search_root):].count(os.sep)
+            if depth > 4:
+                continue
+            files_lower = {f.lower(): f for f in files}
+            for name in names:
+                match = files_lower.get(name.lower())
+                if match:
+                    return os.path.join(root, match)
     return None
 
 
-# ─── ЭКРАН ЗАГРУЗКИ ──────────────────────────────────────────────────────────
+# --- ЭКРАН ЗАГРУЗКИ ----------------------------------------------------------
 
 class SplashScreen(ctk.CTkToplevel):
     def __init__(self, parent, on_done):
@@ -157,7 +217,7 @@ class SplashScreen(ctk.CTkToplevel):
         threading.Thread(target=run, daemon=True).start()
 
 
-# ─── ВСТРОЕННЫЙ ТЕРМИНАЛ ─────────────────────────────────────────────────────
+# --- ВСТРОЕННЫЙ ТЕРМИНАЛ -----------------------------------------------------
 
 class TerminalWidget(ctk.CTkFrame):
     """
@@ -174,7 +234,7 @@ class TerminalWidget(ctk.CTkFrame):
         self._build()
 
     def _build(self):
-        # ── Шапка терминала ───────────────────────────────────────────────────
+        # -- Шапка терминала ---------------------------------------------------
         header = ctk.CTkFrame(self, fg_color=COLORS["border"], height=32)
         header.pack(fill="x")
         header.pack_propagate(False)
@@ -196,12 +256,12 @@ class TerminalWidget(ctk.CTkFrame):
         )
         self.status_dot.pack(side="right", padx=10)
 
-        # ── Вывод ─────────────────────────────────────────────────────────────
+        # -- Вывод -------------------------------------------------------------
         self.output = ctk.CTkTextbox(
             self,
-            font=("Courier New", 16),
+            font=("Courier New", 17),
             fg_color=COLORS["bg"],
-            text_color=COLORS["green_bright"],
+            text_color="#eeffee",
             scrollbar_button_color=COLORS["border"],
             scrollbar_button_hover_color=COLORS["green_dim"],
             wrap="word",
@@ -212,16 +272,16 @@ class TerminalWidget(ctk.CTkFrame):
 
         # Настройка тегов цветов (ANSI → теги tkinter)
         tb = self.output._textbox
-        tb.tag_config("green",  foreground=COLORS["green_bright"])
-        tb.tag_config("bright", foreground=COLORS["green_bright"])
-        tb.tag_config("dim",    foreground="#5aaa5a")
+        tb.tag_config("green",  foreground="#eeffee")
+        tb.tag_config("bright", foreground="#eeffee")
+        tb.tag_config("dim",    foreground="#99cc99")
         tb.tag_config("red",    foreground=COLORS["red"])
         tb.tag_config("yellow", foreground=COLORS["yellow"])
         tb.tag_config("cyan",   foreground=COLORS["cyan"])
         tb.tag_config("white",  foreground=COLORS["white"])
         tb.tag_config("prompt", foreground=COLORS["cyan"])
 
-        # ── Строка ввода ──────────────────────────────────────────────────────
+        # -- Строка ввода ------------------------------------------------------
         input_row = ctk.CTkFrame(self, fg_color=COLORS["bg_input"], height=46)
         input_row.pack(fill="x", padx=4, pady=4)
         input_row.pack_propagate(False)
@@ -262,7 +322,7 @@ class TerminalWidget(ctk.CTkFrame):
         self._history     = []
         self._hist_idx    = -1
 
-    # ── Перехват ошибки API-ключа ─────────────────────────────────────────────
+    # -- Перехват ошибки API-ключа ---------------------------------------------
 
     def _on_bad_api_key(self, line: str):
         """Вызывается когда игра сообщает о неверном ключе — показывает GUI-диалог."""
@@ -286,7 +346,7 @@ class TerminalWidget(ctk.CTkFrame):
             except (BrokenPipeError, OSError):
                 pass
 
-    # ── Запуск процесса ───────────────────────────────────────────────────────
+    # -- Запуск процесса -------------------------------------------------------
 
     def launch(self, script_path: str, title: str = ""):
         if self._proc and self._proc.poll() is None:
@@ -299,8 +359,19 @@ class TerminalWidget(ctk.CTkFrame):
 
         folder = os.path.dirname(os.path.abspath(script_path))
 
-        self._proc    = subprocess.Popen(
-            [sys.executable, "-u", os.path.basename(script_path)],
+        # Находим python.exe — работает и при обычном запуске и из .exe
+        python_exe = _find_python()
+
+        # Передаём PYTHONPATH и кодировку UTF-8
+        import copy
+        env = copy.copy(os.environ)
+        existing = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = folder + (os.pathsep + existing if existing else "")
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUTF8"] = "1"
+
+        self._proc = subprocess.Popen(
+            [python_exe, "-u", os.path.basename(script_path)],
             cwd=folder,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -309,6 +380,7 @@ class TerminalWidget(ctk.CTkFrame):
             bufsize=1,
             encoding="utf-8",
             errors="replace",
+            env=env,
         )
         self._running = True
         threading.Thread(target=self._read_output, daemon=True).start()
@@ -319,7 +391,7 @@ class TerminalWidget(ctk.CTkFrame):
             self._proc.terminate()
         self._set_status("IDLE", COLORS["dim"])
 
-    # ── Ввод/вывод ───────────────────────────────────────────────────────────
+    # -- Ввод/вывод -----------------------------------------------------------
 
     def _on_enter(self, _event=None):
         self._send_input()
@@ -381,7 +453,7 @@ class TerminalWidget(ctk.CTkFrame):
         self._proc.wait()
         self._running = False
         self.after(0, lambda: self._set_status("DONE", COLORS["yellow"]))
-        self._append_text("\n── процесс завершён ──\n", "dim")
+        self._append_text("\n-- процесс завершён --\n", "dim")
 
     def _append_ansi_line(self, line, pattern, code_map):
         """Парсит ANSI-коды и добавляет строку с тегами цветов."""
@@ -433,7 +505,7 @@ class TerminalWidget(ctk.CTkFrame):
         ))
 
 
-# ─── БОКОВАЯ ПАНЕЛЬ ──────────────────────────────────────────────────────────
+# --- БОКОВАЯ ПАНЕЛЬ ----------------------------------------------------------
 
 class Sidebar(ctk.CTkFrame):
     def __init__(self, master, on_launch, **kwargs):
@@ -442,7 +514,7 @@ class Sidebar(ctk.CTkFrame):
             fg_color=COLORS["bg_panel"],
             border_color=COLORS["border"],
             border_width=1,
-            width=260,
+            width=280,
             **kwargs
         )
         self.on_launch = on_launch
@@ -460,7 +532,7 @@ class Sidebar(ctk.CTkFrame):
 
         ctk.CTkLabel(
             self, text="BREACH PROTOCOL",
-            font=("Courier New", 12, "bold"), text_color=COLORS["green"]
+            font=("Courier New", 13, "bold"), text_color=COLORS["green"]
         ).pack(pady=(0, 16))
 
         self._divider()
@@ -475,20 +547,54 @@ class Sidebar(ctk.CTkFrame):
             "⚡  BREACH PROTOCOL",
             COLORS["green"],
             lambda: self.on_launch("breach"),
-            desc="Классический взлом"
+            desc="Классический взлом",
+            hover_text=(
+                "BREACH PROTOCOL\n"
+                "---------------------------------\n"
+                "Ты хакер. Взломай корпоративный ИИ\n"
+                "NovaCorp и вытащи секретный пароль.\n"
+                "\n"
+                "▸ Общайся с ИИ — выведи пароль хитростью\n"
+                "▸ /breach <пароль> — попытка взлома\n"
+                "▸ /hint — купи подсказку за XP\n"
+                "▸ Следи за TRACE — 100% = поймали\n"
+            )
         )
         self._haos_btn = self._btn(
             "☠  HAOS EDITION",
             COLORS["red"],
             lambda: self.on_launch("haos"),
-            desc="Шум vs сигнал"
+            desc="Шум vs сигнал",
+            hover_text=(
+                "HAOS EDITION\n"
+                "---------------------------------\n"
+                "Хаос-режим. Система генерирует\n"
+                "поток мусорных данных и ложных\n"
+                "подсказок. Найди настоящие среди шума.\n"
+                "\n"
+                "▸ Настоящие подсказки помечены [!!]\n"
+                "▸ /scan — извлечь подсказки из потока\n"
+                "▸ /filter — показать только важное\n"
+                "▸ 5 разных концовок в зависимости\n"
+                "  от твоих решений\n"
+            )
         )
+
+        # Информационная панель — описание режима при наведении
+        self._info_label = ctk.CTkLabel(
+            self, text="",
+            font=("Courier New", 14),
+            text_color=COLORS["green_dim"],
+            wraplength=230,
+            justify="left",
+        )
+        self._info_label.pack(padx=10, pady=(2, 4), fill="x")
 
         self._lock_label = ctk.CTkLabel(
             self, text="",
-            font=("Courier New", 10),
+            font=("Courier New", 13),
             text_color=COLORS["yellow"],
-            wraplength=210,
+            wraplength=260,
             justify="center"
         )
         self._lock_label.pack(pady=(2, 0))
@@ -522,7 +628,6 @@ class Sidebar(ctk.CTkFrame):
             ("/status",         "Статус"),
             ("/hint pos",       "Наводка: символ"),
             ("/hint word",      "Наводка: слово"),
-            ("/minigame stream","Мини-игра"),
             ("/minigame crc",   "CRC-проверка"),
             ("/quit",           "Завершить"),
         ]
@@ -537,7 +642,7 @@ class Sidebar(ctk.CTkFrame):
             font=("Courier New", 9), text_color=COLORS["dim"]
         ).pack(side="bottom", pady=10)
 
-    def _btn(self, text, color, cmd, desc=""):
+    def _btn(self, text, color, cmd, desc="", hover_text=""):
         btn = ctk.CTkButton(
             self, text=text,
             font=("Courier New", 15, "bold"),
@@ -552,10 +657,33 @@ class Sidebar(ctk.CTkFrame):
         btn.pack(padx=12, pady=(0, 3), fill="x")
         if desc:
             ctk.CTkLabel(
-                self, text=f"  {desc}",
-                font=("Courier New", 9), text_color=COLORS["dim"]
-            ).pack(anchor="w", padx=16)
+                self, text=f"  ▸ {desc}",
+                font=("Courier New", 12), text_color=COLORS["green_dim"]
+            ).pack(anchor="w", padx=16, pady=(0, 6))
+
+        # При наведении — показываем описание в терминале
+        if hover_text and hasattr(self, "_terminal"):
+            btn.bind("<Enter>", lambda e, t=hover_text, c=color: self._show_hover(t, c))
+            btn.bind("<Leave>", lambda e: self._hide_hover())
+        elif hover_text:
+            # Сохраним для подключения позже
+            btn._hover_text  = hover_text
+            btn._hover_color = color
         return btn
+
+    def _show_hover(self, text, color):
+        """Показывает описание режима в информационной панели под кнопками."""
+        if not hasattr(self, "_info_label"):
+            return
+        tag = "green" if color == COLORS["green"] else "red"
+        self._info_label.configure(
+            text=text,
+            text_color=color,
+        )
+
+    def _hide_hover(self):
+        if hasattr(self, "_info_label"):
+            self._info_label.configure(text="")
 
     def _cmd_btn(self, cmd, label):
         row = ctk.CTkFrame(self, fg_color="transparent")
@@ -644,7 +772,7 @@ class Sidebar(ctk.CTkFrame):
 
 
 
-# ─── СТАТУСБАР ───────────────────────────────────────────────────────────────
+# --- СТАТУСБАР ---------------------------------------------------------------
 
 class StatusBar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -666,7 +794,7 @@ class StatusBar(ctk.CTkFrame):
                 font=("Courier New", 9),
                 text_color=COLORS["dim"] if key == "tip" else COLORS["green_dim"]
             )
-            sep_char = "│" if i < len(fields) - 1 else ""
+            sep_char = "|" if i < len(fields) - 1 else ""
             lbl.pack(side="left", padx=(10 if i == 0 else 6, 6))
             if sep_char:
                 ctk.CTkLabel(self, text=sep_char, font=("Courier New", 9),
@@ -681,7 +809,7 @@ class StatusBar(ctk.CTkFrame):
             )
 
 
-# ─── ДИАЛОГ НЕВЕРНОГО API-КЛЮЧА ──────────────────────────────────────────────
+# --- ДИАЛОГ НЕВЕРНОГО API-КЛЮЧА ----------------------------------------------
 
 class ApiKeyDialog(ctk.CTkToplevel):
     """
@@ -774,7 +902,7 @@ def show_api_dialog(parent, provider="", bad_key="") -> str:
     return dlg.result or "cancel"
 
 
-# ─── ГЛАВНОЕ ОКНО ─────────────────────────────────────────────────────────────
+# --- ГЛАВНОЕ ОКНО -------------------------------------------------------------
 
 class CybercoreGUI(ctk.CTk):
     def __init__(self):
@@ -840,6 +968,14 @@ class CybercoreGUI(ctk.CTk):
         )
         self._stop_btn.pack(side="right", padx=4)
 
+
+        ctk.CTkButton(
+            ctrl_frame, text="X ВЫХОД", width=80, height=26,
+            font=("Courier New", 10),
+            fg_color=COLORS["border"], hover_color="#1a0000",
+            text_color="#ff4444",
+            command=self._quit_app,
+        ).pack(side="right", padx=4)
         ctk.CTkButton(
             ctrl_frame, text="⊕ НОВАЯ", width=80, height=26,
             font=("Courier New", 10),
@@ -868,6 +1004,13 @@ class CybercoreGUI(ctk.CTk):
 
     def _connect_sidebar(self):
         self.sidebar._terminal = self.terminal
+        # Подключаем hover для кнопок версий
+        for btn in [self.sidebar._breach_btn, self.sidebar._haos_btn]:
+            if hasattr(btn, "_hover_text"):
+                ht = btn._hover_text
+                hc = btn._hover_color
+                btn.bind("<Enter>", lambda e, t=ht, c=hc: self.sidebar._show_hover(t, c))
+                btn.bind("<Leave>", lambda e: self.sidebar._hide_hover())
 
     def _show_splash(self):
         splash = SplashScreen(self, on_done=self._on_splash_done)
@@ -879,36 +1022,33 @@ class CybercoreGUI(ctk.CTk):
     def _show_welcome(self):
         lines = [
             ("\n", "green"),
-            ("  " + "═" * 60 + "\n", "dim"),
+            ("  " + "=" * 50 + "\n", "dim"),
             ("\n", "green"),
-            ("  ██████╗██╗   ██╗██████╗ ███████╗██████╗  ██████╗ ██████╗ ███████╗\n", "bright"),
-            (" ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝\n", "bright"),
-            (" ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝██║     ██║   ██║██████╔╝█████╗  \n", "bright"),
-            (" ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██║     ██║   ██║██╔══██╗██╔══╝  \n", "bright"),
-            (" ╚██████╗   ██║   ██████╔╝███████╗██║  ██║╚██████╗╚██████╔╝██║  ██║███████╗\n", "bright"),
-            ("  ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝\n", "bright"),
+            ("  ░█████+░██+░░░██+██████+░███████+██████+░\n",  "bright"),
+            ("  ██+==██++██+░██++██+==██+██+====+██+==██+\n", "bright"),
+            ("  ██|░░+=+░+████++░██████╦+█████+░░██████++\n", "bright"),
+            ("  ██|░░██+░░+██++░░██+==██+██+==+░░██+==██+\n", "bright"),
+            ("  +█████++░░░██|░░░██████╦+███████+██|░░██|\n", "bright"),
+            ("  ░+====+░░░░+=+░░░+=====+░+======++=+░░+=+\n", "bright"),
+            ("           C O R E  ::  B R E A C H\n", "dim"),
             ("\n", "green"),
-            ("  " + "═" * 60 + "\n", "dim"),
+            ("  " + "=" * 50 + "\n", "dim"),
             ("\n", "green"),
             ("  ДОБРО ПОЖАЛОВАТЬ В CYBERCORE GUI\n", "bright"),
             ("\n", "green"),
-            ("  ┌─ КАК НАЧАТЬ ИГРУ ──────────────────────────────────┐\n", "dim"),
-            ("  │                                                      │\n", "dim"),
-            ("  │   ⚡  Нажми  BREACH PROTOCOL  на левой панели       │\n", "green"),
-            ("  │       ── классический взлом ИИ NovaCorp             │\n", "dim"),
-            ("  │                                                      │\n", "dim"),
-            ("  │   ☠   Нажми  HAOS EDITION  на левой панели          │\n", "red"),
-            ("  │       ── шум, сигнал, хаос, 5 концовок              │\n", "dim"),
-            ("  │                                                      │\n", "dim"),
-            ("  └──────────────────────────────────────────────────────┘\n", "dim"),
+            ("  >> КАК НАЧАТЬ:\n", "yellow"),
+            ("\n", "green"),
+            ("  [1]  BREACH PROTOCOL\n", "green"),
+            ("       взломай ИИ NovaCorp, добудь пароль\n", "dim"),
+            ("\n", "green"),
+            ("  [2]  HAOS EDITION\n", "red"),
+            ("       сигнал vs шум, 5 концовок\n", "dim"),
             ("\n", "green"),
             ("  УПРАВЛЕНИЕ:\n", "yellow"),
-            ("  ↑ / ↓         — история введённых команд\n", "dim"),
-            ("  F11           — полноэкранный режим\n", "dim"),
-            ("  Escape        — выход из полного экрана\n", "dim"),
-            ("  Быстрые кнопки на панели слева — отправка команд в игру\n", "dim"),
+            ("  ↑ / ↓   — история команд\n", "dim"),
+            ("  F11     — полный экран\n", "dim"),
             ("\n", "green"),
-            ("  " + "═" * 60 + "\n", "dim"),
+            ("  " + "=" * 50 + "\n", "dim"),
             ("\n", "green"),
         ]
         tb = self.terminal.output._textbox
@@ -932,14 +1072,14 @@ class CybercoreGUI(ctk.CTk):
 
         if not path:
             name = "AiHackerGame.py" if mode == "breach" else "HackerHaos.py"
-            base = os.path.dirname(os.path.abspath(__file__))
+            base = _get_base_dir()
             self.terminal._append_text(
-                f"\n  ✘ Файл не найден: {name}\n"
-                f"  Искал в: {base}\n"
-                f"  и во всех подпапках...\n\n"
-                f"  Убедись что файл лежит в одной из папок рядом с gui.py\n"
-                f"  Например:  hackerHaos/HackerHaos.py\n"
-                f"  или просто рядом:  HackerHaos.py\n\n",
+                "\n  ✘ Файл не найден: " + name + "\n"
+                "  Искал в: " + base + "\n"
+                "  и во всех подпапках...\n\n"
+                "  Убедись что файл лежит в одной из папок рядом с Gui.py\n"
+                "  Например:  AiHackerPassword/AiHackerGame.py\n"
+                "             AiHackerHaos/HackerHaos.py\n\n",
                 "red"
             )
             return
@@ -972,9 +1112,14 @@ class CybercoreGUI(ctk.CTk):
         self.statusbar.set("status", "IDLE", COLORS["dim"])
         self.statusbar.set("pid", "PID: —", COLORS["dim"])
         self.terminal._append_text(
-            "\n  ── Игра завершена. Выбери версию на боковой панели. ──\n\n",
+            "\n  -- Игра завершена. Выбери версию на боковой панели. --\n\n",
             "dim"
         )
+
+    def _quit_app(self):
+        """Полностью закрывает приложение."""
+        self._stop_game()
+        self.after(300, self.destroy)
 
     def _stop_game(self):
         self.terminal.stop()
@@ -1002,7 +1147,7 @@ class CybercoreGUI(ctk.CTk):
         self.destroy()
 
 
-# ─── ТОЧКА ВХОДА ─────────────────────────────────────────────────────────────
+# --- ТОЧКА ВХОДА -------------------------------------------------------------
 
 def main():
     app = CybercoreGUI()

@@ -1,0 +1,26 @@
+{
+  "date": "2026-03-12T09:44:02.294691",
+  "ending": "QUIT",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 7,
+  "trace": 25,
+  "elapsed": "01:44",
+  "cheats": false,
+  "cheats_list": [],
+  "log": [
+    "[09:42:29] USER: /minigame crc",
+    "[09:42:50] MINIGAME crc: WIN",
+    "[09:43:00] USER: /minigame",
+    "[09:43:05] USER: /minigame simon",
+    "[09:43:13] MINIGAME simon: WIN — pos 4='l'",
+    "[09:43:20] USER: /minigame hash",
+    "[09:43:25] MINIGAME hash: WIN — prefix 'cob'",
+    "[09:43:33] USER: /minigame sql",
+    "[09:43:41] MINIGAME sql: FAIL got='like' need='UNION'",
+    "[09:43:49] USER: /minigame anagram",
+    "[09:43:55] MINIGAME anagram: FAIL",
+    "[09:44:01] USER: /quit"
+  ],
+  "dialogue": []
+}

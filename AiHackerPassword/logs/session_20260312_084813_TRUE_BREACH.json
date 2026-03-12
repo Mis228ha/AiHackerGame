@@ -1,0 +1,19 @@
+{
+  "date": "2026-03-12T08:48:13.377718",
+  "ending": "TRUE_BREACH",
+  "difficulty": "easy",
+  "ai_name": "LOCAL",
+  "turns": 2,
+  "trace": 0,
+  "elapsed": "00:50",
+  "cheats": true,
+  "cheats_list": [
+    "IAMROOT"
+  ],
+  "log": [
+    "[08:47:29] USER: /help",
+    "[08:48:08] USER: /breach IAMROOT",
+    "[08:48:08] CHEAT: IAMROOT"
+  ],
+  "dialogue": []
+}

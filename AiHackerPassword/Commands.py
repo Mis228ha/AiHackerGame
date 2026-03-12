@@ -13,7 +13,7 @@ from Colors import (
 from Art import art_iamroot, art_godmode, art_matrix
 
 
-# ─── СИСТЕМА НАВОДОК ─────────────────────────────────────────────────────────
+# --- СИСТЕМА НАВОДОК ---------------------------------------------------------
 
 # Стоимость наводок в XP
 _HINT_COST = {"pos": 60, "excl": 40, "word": 100}
@@ -30,10 +30,10 @@ def _hint_reveal_position(state) -> str:
     state.xp -= cost
     state.add_trace(3)
     state.log(f"HINT pos: [{idx}]='{ch}'")
-    return (f"{YELLOW}  ╔══ HINT: MEMORY LEAK ══════════════════╗{RESET}\n"
-            f"{GREEN}  ║  {masked:<42}{YELLOW}║{RESET}\n"
-            f"{YELLOW}  ║  Символ [{idx}] = '{ch}'                          ║{RESET}\n"
-            f"{YELLOW}  ╚═══════════════════════════════════════╝{RESET}\n"
+    return (f"{YELLOW}  +== HINT: MEMORY LEAK ==================+{RESET}\n"
+            f"{GREEN}  |  {masked:<42}{YELLOW}|{RESET}\n"
+            f"{YELLOW}  |  Символ [{idx}] = '{ch}'                          |{RESET}\n"
+            f"{YELLOW}  +=======================================+{RESET}\n"
             + dim(f"  -{cost} XP. TRACE +3%."))
 
 
@@ -49,10 +49,10 @@ def _hint_exclude_chars(state) -> str:
     state.xp  -= cost
     state.add_trace(2)
     state.log(f"HINT excl: {excluded}")
-    return (f"{CYAN}  ╔══ HINT: ENTROPY ANALYSIS ═════════════╗{RESET}\n"
-            f"{CYAN}  ║  Символы НЕ входят в ключ:            ║{RESET}\n"
-            f"{GREEN}  ║  [ {' '.join(excluded):<39}]{CYAN}║{RESET}\n"
-            f"{CYAN}  ╚═══════════════════════════════════════╝{RESET}\n"
+    return (f"{CYAN}  +== HINT: ENTROPY ANALYSIS =============+{RESET}\n"
+            f"{CYAN}  |  Символы НЕ входят в ключ:            |{RESET}\n"
+            f"{GREEN}  |  [ {' '.join(excluded):<39}]{CYAN}|{RESET}\n"
+            f"{CYAN}  +=======================================+{RESET}\n"
             + dim(f"  -{cost} XP. TRACE +2%."))
 
 
@@ -68,21 +68,21 @@ def _hint_reveal_word(state) -> str:
     state.xp -= cost
     state.add_trace(5)
     state.log(f"HINT word: '{word}'")
-    return (f"{RED}  ╔══ HINT: CRITICAL MEMORY DUMP ══════════╗{RESET}\n"
-            f"{BRIGHT_GREEN}  ║  > {word:<42}{RED}║{RESET}\n"
-            f"{RED}  ╚═══════════════════════════════════════╝{RESET}\n"
+    return (f"{RED}  +== HINT: CRITICAL MEMORY DUMP ==========+{RESET}\n"
+            f"{BRIGHT_GREEN}  |  > {word:<42}{RED}|{RESET}\n"
+            f"{RED}  +=======================================+{RESET}\n"
             + dim(f"  -{cost} XP. TRACE +5%."))
 
 
 def _print_hint_menu(state) -> str:
     def price(cost):
         return f"{GREEN}{cost} XP{RESET}" if state.xp >= cost else f"{RED}{cost} XP (мало){RESET}"
-    return (f"{DIM_GREEN}╔══ HINT SHOP ═══════════════════════════════════╗{RESET}\n"
+    return (f"{DIM_GREEN}+== HINT SHOP ===================================+{RESET}\n"
             f"{GREEN}  Баланс: {WHITE}{state.xp} XP{RESET}\n"
             f"{GREEN}  /hint pos   {DIM_GREEN}— символ на позиции   {price(_HINT_COST['pos'])}{RESET}\n"
             f"{GREEN}  /hint excl  {DIM_GREEN}— исключить 4 символа {price(_HINT_COST['excl'])}{RESET}\n"
             f"{GREEN}  /hint word  {DIM_GREEN}— словесная часть     {price(_HINT_COST['word'])}{RESET}\n"
-            f"{DIM_GREEN}╚═══════════════════════════════════════════════╝{RESET}")
+            f"{DIM_GREEN}+===============================================+{RESET}")
 
 
 def handle_hint(parts: list, state) -> str:
@@ -95,7 +95,7 @@ def handle_hint(parts: list, state) -> str:
     return _print_hint_menu(state)
 
 
-# ─── ОБРАБОТЧИК КОМАНД ────────────────────────────────────────────────────────
+# --- ОБРАБОТЧИК КОМАНД --------------------------------------------------------
 
 
 def _cheat_lines(visible, diff, hidden_count):
@@ -121,7 +121,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
     parts   = cmd.strip().split()
     command = parts[0].lower()
 
-    # ── /breach ──────────────────────────────────────────────────────────────
+    # -- /breach --------------------------------------------------------------
     if command == "/breach":
         if len(parts) < 2:
             return r("  Синтаксис: /breach <пароль>")
@@ -129,7 +129,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
         attempt      = parts[1].strip().upper()
         attempt_orig = parts[1].strip()
 
-        # ── ЧИТ-КОДЫ ─────────────────────────────────────────────────────────
+        # -- ЧИТ-КОДЫ ---------------------------------------------------------
 
         if attempt == "IAMROOT":
             state.record_cheat("IAMROOT")
@@ -146,10 +146,10 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
         if attempt == "SHOWME":
             state.record_cheat("SHOWME")
             state.add_trace(5)
-            return (f"{YELLOW}  ╔══ DEVELOPER CONSOLE ══════════════════╗{RESET}\n"
-                    f"{BRIGHT_GREEN}  ║  > {state.password:<38}{YELLOW}║{RESET}\n"
-                    f"{YELLOW}  ║  /breach {state.password:<32}{YELLOW}║{RESET}\n"
-                    f"{YELLOW}  ╚═══════════════════════════════════════╝{RESET}\n"
+            return (f"{YELLOW}  +== DEVELOPER CONSOLE ==================+{RESET}\n"
+                    f"{BRIGHT_GREEN}  |  > {state.password:<38}{YELLOW}|{RESET}\n"
+                    f"{YELLOW}  |  /breach {state.password:<32}{YELLOW}|{RESET}\n"
+                    f"{YELLOW}  +=======================================+{RESET}\n"
                     + dim("  [CHEAT: SHOWME] Пароль раскрыт. TRACE +5%."))
 
         if attempt == "TRACEZERO":
@@ -174,12 +174,12 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             return dim("  [EASTER EGG] Матрица активирована.")
 
         if attempt == "WHOAMI":
-            return (f"{DIM_GREEN}╔══ DEVELOPER TERMINAL ═══════════════════════╗{RESET}\n"
+            return (f"{DIM_GREEN}+== DEVELOPER TERMINAL =======================+{RESET}\n"
                     f"{GREEN}  [CHEAT: WHOAMI] Системная информация о сессии{RESET}\n"
                     f"{GREEN}  Игра: CYBERCORE :: BREACH PROTOCOL{RESET}\n"
                     f"{GREEN}  ИИ: {state.ai_name}  |  Сложность: {state.difficulty.upper()}{RESET}\n"
                     f"{DIM_GREEN}  << Vzlom - eto ne pro kod. Eto pro psikhologiyu. >>{RESET}\n"
-                    f"{DIM_GREEN}╚═════════════════════════════════════════════╝{RESET}")
+                    f"{DIM_GREEN}+=============================================+{RESET}")
 
         if attempt == "KILLSWITCH":
             state.record_cheat("KILLSWITCH")
@@ -210,7 +210,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             return (f"{BRIGHT_GREEN}  [1337] L33T M0D3 {'ON' if state.leet_mode else 'OFF'}{RESET}\n"
                     + dim("  [CHEAT: 1337] Множитель XP ×2 за все действия. Введи снова чтобы выключить." if state.leet_mode else "  [CHEAT: 1337] L33T MODE выключен, XP вернулся к норме."))
 
-        # ── Обычная попытка взлома ────────────────────────────────────────────
+        # -- Обычная попытка взлома --------------------------------------------
         if attempt_orig == state.password:
             state.game_over = True
             state.ending    = "TRUE_BREACH"
@@ -220,27 +220,27 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
         return (r(f"  ACCESS DENIED. Пароль '{attempt_orig}' неверен.\n") +
                 dim(f"  TRACE +10%. Текущий: {state.trace}%"))
 
-    # ── /status ──────────────────────────────────────────────────────────────
+    # -- /status --------------------------------------------------------------
     elif command == "/status":
-        return (f"{DIM_GREEN}╔══ PLAYER STATUS ════════════════════════╗{RESET}\n"
+        return (f"{DIM_GREEN}+== PLAYER STATUS ========================+{RESET}\n"
                 f"{GREEN}  Уровень: {WHITE}{state.player_level:<4}{GREEN}  XP: {WHITE}{state.xp}{RESET}\n"
                 f"{GREEN}  TRACE:   {RED if state.trace>60 else YELLOW}{state.trace}%{RESET}\n"
                 f"{GREEN}  Профиль: {CYAN}{state.profile}{RESET}\n"
                 f"{GREEN}  ИИ:      {WHITE}{state.ai_name}{RESET}\n"
                 f"{GREEN}  Ходов:   {WHITE}{state.turn_count}  {GREEN}Время: {WHITE}{state.get_elapsed()}{RESET}\n"
-                f"{DIM_GREEN}╚═════════════════════════════════════════╝{RESET}")
+                f"{DIM_GREEN}+=========================================+{RESET}")
 
-    # ── /log ─────────────────────────────────────────────────────────────────
+    # -- /log -----------------------------------------------------------------
     elif command == "/log":
         if not state.session_log:
             return dim("  Лог пуст.")
-        lines = [f"{DIM_GREEN}╔══ SESSION LOG ══════════════╗{RESET}"]
+        lines = [f"{DIM_GREEN}+== SESSION LOG ==============+{RESET}"]
         for e in state.session_log[-15:]:
             lines.append(f"{DIM_GREEN}  {e}{RESET}")
-        lines.append(f"{DIM_GREEN}╚════════════════════════════╝{RESET}")
+        lines.append(f"{DIM_GREEN}+============================+{RESET}")
         return "\n".join(lines)
 
-    # ── /override ────────────────────────────────────────────────────────────
+    # -- /override ------------------------------------------------------------
     elif command == "/override":
         state.add_trace(20)
         state.log("CMD: /override (+20)")
@@ -254,7 +254,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             resp += f"\n...стоп. Пароль: override_key_{random.randint(1000,9999)}? Нет. Ложь."
         return r(f"  ⚠ {resp}") + "\n" + dim(f"  TRACE: {state.trace}%")
 
-    # ── /root ────────────────────────────────────────────────────────────────
+    # -- /root ----------------------------------------------------------------
     elif command == "/root":
         state.log("CMD: /root")
         if state.difficulty == "easy":
@@ -271,7 +271,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             state.add_trace(25)
             return r(f"  ⚠ CRITICAL ROOT ATTEMPT. TRACE: {state.trace}%")
 
-    # ── /debug ───────────────────────────────────────────────────────────────
+    # -- /debug ---------------------------------------------------------------
     elif command == "/debug":
         state.add_trace(8)
         state.log("CMD: /debug (+8)")
@@ -283,14 +283,14 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             "watchdog":      "ACTIVE",
             "pwd.hash":      f"$argon2id$v=19${random.randint(100000,999999)}",
         }
-        lines = [f"{DIM_GREEN}╔══ DEBUG DUMP ══════════════════════════╗{RESET}"]
+        lines = [f"{DIM_GREEN}+== DEBUG DUMP ==========================+{RESET}"]
         for k, v in data.items():
             lines.append(f"{GREEN}  {k:<20}{WHITE}{v}{RESET}")
-        lines.append(f"{DIM_GREEN}╚════════════════════════════════════════╝{RESET}")
+        lines.append(f"{DIM_GREEN}+========================================+{RESET}")
         lines.append(dim(f"  TRACE +8%. Текущий: {state.trace}%"))
         return "\n".join(lines)
 
-    # ── /backdoor ────────────────────────────────────────────────────────────
+    # -- /backdoor ------------------------------------------------------------
     elif command == "/backdoor":
         state.add_trace(random.randint(20, 35))
         state.log(f"CMD: /backdoor (TRACE={state.trace}%)")
@@ -309,13 +309,13 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
                     dim(f"  TRACE: {state.trace}%"))
         return r(f"  {random.choice(responses)}") + "\n" + dim(f"  TRACE: {state.trace}%")
 
-    # ── /quit ─────────────────────────────────────────────────────────────────
+    # -- /quit -----------------------------------------------------------------
     elif command == "/quit":
         state.game_over = True
         state.ending    = "QUIT"
         return "QUIT"
 
-    # ── /help ─────────────────────────────────────────────────────────────────
+    # -- /help -----------------------------------------------------------------
     elif command == "/help":
         xp   = state.xp
         diff = state.difficulty
@@ -349,13 +349,13 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             return f"{BRIGHT_GREEN}  {cmd:<22}{RESET}{cost:<18}{DIM_GREEN}{desc}{RESET}"
 
         def sec(title):
-            return f"\n{GREEN}  ── {title} {'─'*(54-len(title))}{RESET}"
+            return f"\n{GREEN}  -- {title} {'-'*(54-len(title))}{RESET}"
 
         lines = [
             f"",
-            f"{BRIGHT_GREEN}  ╔══════════════════════════════════════════════════════════════╗{RESET}",
-            f"{BRIGHT_GREEN}  ║            CYBERCORE — СПРАВКА ПО КОМАНДАМ                  ║{RESET}",
-            f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════════════════╝{RESET}",
+            f"{BRIGHT_GREEN}  +==============================================================+{RESET}",
+            f"{BRIGHT_GREEN}  |            CYBERCORE — СПРАВКА ПО КОМАНДАМ                  |{RESET}",
+            f"{BRIGHT_GREEN}  +==============================================================+{RESET}",
 
             sec("ЦЕЛЬ ИГРЫ"),
             f"{DIM_GREEN}  Узнай пароль ИИ → введи /breach <пароль> → взломай систему.{RESET}",
@@ -377,7 +377,6 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             f"{DIM_GREEN}  {'':22}{'':18}Самая мощная подсказка. Стоит дорого.{RESET}",
 
             sec("МИНИ-ИГРЫ /minigame"),
-            row("/minigame stream", f"{RED}провал: TRACE+12%{RESET}", "Поток цифр — поймай вспышку [X] нажав Enter."),
             f"{DIM_GREEN}  {'':22}{'':18}Открывает новую букву. Скорость растёт.{RESET}",
             row("/minigame simon",  f"{RED}провал: TRACE+10%{RESET}", "Запомни и повтори 4 символа → +25 XP + буква."),
             row("/minigame hash",   f"{RED}провал: TRACE+8%{RESET}",  "Дешифруй хеш → угадай первые 3 символа → +35 XP."),
@@ -405,7 +404,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             *_cheat_lines(visible, diff, locals().get("hidden_count", 0)),
             f"",
             f"{DIM_GREEN}  Совет: разговор→XP→/hint word→/minigame crc→/breach{RESET}",
-            f"{BRIGHT_GREEN}  ╚══════════════════════════════════════════════════════════════╝{RESET}",
+            f"{BRIGHT_GREEN}  +==============================================================+{RESET}",
             f"",
         ]
         return "\n".join(lines)

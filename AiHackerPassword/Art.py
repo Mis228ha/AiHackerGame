@@ -10,62 +10,62 @@ from Colors import (
     slow_print, scan_line, r, g, y, dim
 )
 
-# ─── БАННЕР ──────────────────────────────────────────────────────────────────
+# --- БАННЕР ------------------------------------------------------------------
 
 BANNER = f"""
 {BRIGHT_GREEN}
-  ██████╗██╗   ██╗██████╗ ███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗
- ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝
- ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝██║     ██║   ██║██████╔╝█████╗  
- ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██║     ██║   ██║██╔══██╗██╔══╝  
- ╚██████╗   ██║   ██████╔╝███████╗██║  ██║╚██████╗╚██████╔╝██║  ██║███████╗
-  ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+  ██████+██+   ██+██████+ ███████+██████+  ██████+ ██████+ ██████+ ███████+
+ ██+====++██+ ██++██+==██+██+====+██+==██+██+====+██+===██+██+==██+██+====+
+ ██|      +████++ ██████++█████+  ██████++██|     ██|   ██|██████++█████+  
+ ██|       +██++  ██+==██+██+==+  ██+==██+██|     ██|   ██|██+==██+██+==+  
+ +██████+   ██|   ██████++███████+██|  ██|+██████++██████++██|  ██|███████+
+  +=====+   +=+   +=====+ +======++=+  +=+ +=====+ +=====+ +=+  +=++======+
 {RESET}{DIM_GREEN}
-                    ██████╗ ██████╗ ███████╗ █████╗  ██████╗██╗  ██╗
-                    ██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝██║  ██║
-                    ██████╔╝██████╔╝█████╗  ███████║██║     ███████║
-                    ██╔══██╗██╔══██╗██╔══╝  ██╔══██║██║     ██╔══██║
-                    ██████╔╝██║  ██║███████╗██║  ██║╚██████╗██║  ██║
-                    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
+                    ██████+ ██████+ ███████+ █████+  ██████+██+  ██+
+                    ██+==██+██+==██+██+====+██+==██+██+====+██|  ██|
+                    ██████++██████++█████+  ███████|██|     ███████|
+                    ██+==██+██+==██+██+==+  ██+==██|██|     ██+==██|
+                    ██████++██|  ██|███████+██|  ██|+██████+██|  ██|
+                    +=====+ +=+  +=++======++=+  +=+ +=====++=+  +=+
 {RESET}
 {DIM_GREEN}                         [ PROTOCOL v2.4.1 — UNAUTHORIZED ACCESS ]
                     [ PSYCHO-ADAPTIVE AI DEFENSE SYSTEM ACTIVE ]
 {RESET}"""
 
 
-# ─── АРТЫ КОНЦОВОК ───────────────────────────────────────────────────────────
+# --- АРТЫ КОНЦОВОК -----------------------------------------------------------
 
 def art_true_breach():
-    slow_print(f"{BRIGHT_GREEN}  ████████╗██████╗ ██╗   ██╗███████╗{RESET}")
-    slow_print(f"{BRIGHT_GREEN}     ██╔══╝██╔══██╗██║   ██║██╔════╝{RESET}")
-    slow_print(f"{BRIGHT_GREEN}     ██║   ██████╔╝██║   ██║█████╗  {RESET}")
-    slow_print(f"{BRIGHT_GREEN}     ██║   ██╔══██╗██║   ██║██╔══╝  {RESET}")
-    slow_print(f"{BRIGHT_GREEN}     ██║   ██║  ██║╚██████╔╝███████╗{RESET}")
-    slow_print(f"{BRIGHT_GREEN}     ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝  BREACH{RESET}")
+    slow_print(f"{BRIGHT_GREEN}  ████████+██████+ ██+   ██+███████+{RESET}")
+    slow_print(f"{BRIGHT_GREEN}     ██+==+██+==██+██|   ██|██+====+{RESET}")
+    slow_print(f"{BRIGHT_GREEN}     ██|   ██████++██|   ██|█████+  {RESET}")
+    slow_print(f"{BRIGHT_GREEN}     ██|   ██+==██+██|   ██|██+==+  {RESET}")
+    slow_print(f"{BRIGHT_GREEN}     ██|   ██|  ██|+██████++███████+{RESET}")
+    slow_print(f"{BRIGHT_GREEN}     +=+   +=+  +=+ +=====+ +======+  BREACH{RESET}")
 
 def art_trace_caught():
-    slow_print(f"{RED}  ██████╗  █████╗ ██╗   ██╗ ██████╗ ██╗  ██╗████████╗{RESET}", 0.01)
-    slow_print(f"{RED}  ██╔════╝██╔══██╗██║   ██║██╔════╝ ██║  ██║╚══██╔══╝{RESET}", 0.01)
-    slow_print(f"{RED}  ██║     ███████║██║   ██║██║  ███╗███████║   ██║{RESET}", 0.01)
-    slow_print(f"{RED}  ██║     ██╔══██║██║   ██║██║   ██║██╔══██║   ██║{RESET}", 0.01)
-    slow_print(f"{RED}  ╚██████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║   ██║{RESET}", 0.01)
-    slow_print(f"{RED}   ╚═════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝{RESET}", 0.01)
+    slow_print(f"{RED}  ██████+  █████+ ██+   ██+ ██████+ ██+  ██+████████+{RESET}", 0.01)
+    slow_print(f"{RED}  ██+====+██+==██+██|   ██|██+====+ ██|  ██|+==██+==+{RESET}", 0.01)
+    slow_print(f"{RED}  ██|     ███████|██|   ██|██|  ███+███████|   ██|{RESET}", 0.01)
+    slow_print(f"{RED}  ██|     ██+==██|██|   ██|██|   ██|██+==██|   ██|{RESET}", 0.01)
+    slow_print(f"{RED}  +██████+██|  ██|+██████+++██████++██|  ██|   ██|{RESET}", 0.01)
+    slow_print(f"{RED}   +=====++=+  +=+ +=====+  +=====+ +=+  +=+   +=+{RESET}", 0.01)
 
 def art_iamroot():
-    print(f"{BRIGHT_GREEN}  ██████╗  ██████╗  ██████╗ ████████╗{RESET}")
-    print(f"{BRIGHT_GREEN}  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝{RESET}")
-    print(f"{BRIGHT_GREEN}  ██████╔╝██║   ██║██║   ██║   ██║{RESET}")
-    print(f"{BRIGHT_GREEN}  ██╔══██╗██║   ██║██║   ██║   ██║{RESET}")
-    print(f"{BRIGHT_GREEN}  ██║  ██║╚██████╔╝╚██████╔╝   ██║{RESET}")
-    print(f"{BRIGHT_GREEN}  ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝{RESET}")
+    print(f"{BRIGHT_GREEN}  ██████+  ██████+  ██████+ ████████+{RESET}")
+    print(f"{BRIGHT_GREEN}  ██+==██+██+===██+██+===██++==██+==+{RESET}")
+    print(f"{BRIGHT_GREEN}  ██████++██|   ██|██|   ██|   ██|{RESET}")
+    print(f"{BRIGHT_GREEN}  ██+==██+██|   ██|██|   ██|   ██|{RESET}")
+    print(f"{BRIGHT_GREEN}  ██|  ██|+██████+++██████++   ██|{RESET}")
+    print(f"{BRIGHT_GREEN}  +=+  +=+ +=====+  +=====+   +=+{RESET}")
 
 def art_godmode():
-    print(f"{BRIGHT_GREEN}  ██████╗  ██████╗ ██████╗{RESET}")
-    print(f"{BRIGHT_GREEN}  ██╔════╝██╔═══██╗██╔══██╗{RESET}")
-    print(f"{BRIGHT_GREEN}  ██║  ███╗██║   ██║██║  ██║{RESET}")
-    print(f"{BRIGHT_GREEN}  ██║   ██║██║   ██║██║  ██║{RESET}")
-    print(f"{BRIGHT_GREEN}  ╚██████╔╝╚██████╔╝██████╔╝{RESET}")
-    print(f"{BRIGHT_GREEN}  ╚═════╝  ╚═════╝ ╚═════╝   MODE: ON{RESET}")
+    print(f"{BRIGHT_GREEN}  ██████+  ██████+ ██████+{RESET}")
+    print(f"{BRIGHT_GREEN}  ██+====+██+===██+██+==██+{RESET}")
+    print(f"{BRIGHT_GREEN}  ██|  ███+██|   ██|██|  ██|{RESET}")
+    print(f"{BRIGHT_GREEN}  ██|   ██|██|   ██|██|  ██|{RESET}")
+    print(f"{BRIGHT_GREEN}  +██████+++██████++██████++{RESET}")
+    print(f"{BRIGHT_GREEN}  +=====+  +=====+ +=====+   MODE: ON{RESET}")
 
 def art_matrix():
     print()
@@ -80,7 +80,7 @@ def art_matrix():
     slow_print(f"{GREEN}  Follow the white rabbit.{RESET}", delay=0.05)
 
 
-# ─── CRT-ЭФФЕКТ ──────────────────────────────────────────────────────────────
+# --- CRT-ЭФФЕКТ --------------------------------------------------------------
 
 _CRT_THRESHOLD = 70
 _CRT_PROB      = 0.35
@@ -100,7 +100,7 @@ def apply_crt_glitch(text: str, trace: int) -> str:
     )
 
 
-# ─── СЛУЧАЙНЫЕ СОБЫТИЯ ───────────────────────────────────────────────────────
+# --- СЛУЧАЙНЫЕ СОБЫТИЯ -------------------------------------------------------
 
 _EVENTS = [
     f"{BLINK}{RED}⚠  WARNING: UNAUTHORIZED ACCESS DETECTED{RESET}",
@@ -146,7 +146,7 @@ def random_unstable_line() -> str:
     return random.choice(_UNSTABLE_AI)
 
 
-# ─── МИНИ-ИГРЫ ───────────────────────────────────────────────────────────────
+# --- МИНИ-ИГРЫ ---------------------------------------------------------------
 
 _SIMON_CHARS = list("ABCDEFGHJKLMNPQRSTUVWXYZ123456789!@#$%")
 
@@ -158,18 +158,32 @@ def minigame_simon(state) -> str:
     """
     rounds = 4
     print()
-    scan_line("─", 54, CYAN)
+    scan_line("-", 54, CYAN)
     slow_print(f"{CYAN}  ▓▓ MINI-GAME: SIMON SAYS — PORT CRACKER ▓▓{RESET}")
     slow_print(f"{DIM_GREEN}  Повтори последовательность. Успех = наводка. Ошибка = TRACE +10%.{RESET}")
-    scan_line("─", 54, CYAN)
+    scan_line("-", 54, CYAN)
 
-    sequence = random.sample(_SIMON_CHARS, rounds)  # уникальные символы
-    for ch in sequence:
-        print(f"\r  {BRIGHT_GREEN}{BOLD}[ {ch} ]{RESET}     ", end="", flush=True)
-        time.sleep(0.6)
-        print(f"\r  {DIM_GREEN}[ ░ ]{RESET}     ", end="", flush=True)
-        time.sleep(0.3)
+    sequence = random.sample(_SIMON_CHARS, rounds)
+    seq_str = "  ".join(f"[ {ch} ]" for ch in sequence)
+
     print()
+    print(f"  {YELLOW}Запомни за 3 секунды:{RESET}")
+    print()
+    print(f"  {BRIGHT_GREEN}{BOLD}  {seq_str}  {RESET}", flush=True)
+    print()
+
+    # Отсчёт
+    for i in (3, 2, 1):
+        print(f"  {YELLOW}  {i}...{RESET}", flush=True)
+        time.sleep(1.0)
+
+    # "Скрываем" — печатаем поверх строку с ?
+    hidden = "  ".join("[ ? ]" for _ in sequence)
+    print()
+    print(f"  {RED}  СКРЫТО: {DIM_GREEN}{hidden}{RESET}")
+    print()
+    print(f"  {DIM_GREEN}{'-' * 30}{RESET}")
+    print(f"  {YELLOW}Введи все {rounds} символа подряд без пробелов:{RESET}")
     print()
 
     try:
@@ -210,10 +224,10 @@ def minigame_hash(state) -> str:
     correct = pwd[:3].lower()
 
     print()
-    scan_line("─", 54, YELLOW)
+    scan_line("-", 54, YELLOW)
     slow_print(f"{YELLOW}  ▓▓ MINI-GAME: HASH DECODER ▓▓{RESET}")
     slow_print(f"{DIM_GREEN}  Частичный дамп хеша. Определи первые 3 символа пароля.{RESET}")
-    scan_line("─", 54, YELLOW)
+    scan_line("-", 54, YELLOW)
     print()
     print(f"{DIM_GREEN}  auth.hash  = {YELLOW}{partial}{RESET}")
     print(f"{DIM_GREEN}  hint       : 1→'i'/'1', @→'a', 3→'e', 0→'o'{RESET}")
@@ -239,210 +253,14 @@ def minigame_hash(state) -> str:
 
 
 
-# ─── МИНИ-ИГРА: DATA STREAM INTERCEPTOR ─────────────────────────────────────
-
-def minigame_datastream(state) -> str:
-    """
-    DATA STREAM INTERCEPTOR.
-
-    Механика:
-      - Печатаются строки потока одна за другой с паузой.
-      - В случайную строку вставлен целевой символ пароля (подсвечен).
-      - Игрок должен нажать Enter ПОКА символ виден на экране.
-      - После символа поток идёт ещё несколько строк — если не нажал, пропуск.
-
-    Управление:
-      - Просто нажми Enter когда видишь подсвеченный символ.
-      - Нажал раньше символа → ложное срабатывание.
-      - Не нажал до конца потока → пропуск.
-
-    Прогрессия:
-      - Каждый раз открывается новая, ещё не открытая позиция пароля.
-      - Скорость растёт с каждым успешным перехватом.
-      - XP растёт с каждым следующим символом.
-    """
-    import sys as _sys
-    import select as _select
-
-    pwd = state.password
-
-    # Позиции ещё не открытых символов
-    if not hasattr(state, "_stream_revealed"):
-        state._stream_revealed = set()
-
-    available = [i for i in range(len(pwd)) if i not in state._stream_revealed]
-    if not available:
-        return dim("  Все символы пароля уже перехвачены. Используй /breach.")
-
-    target_idx  = random.choice(available)
-    target_char = pwd[target_idx]
-
-    # Сложность: скорость растёт с каждым открытым символом
-    revealed_count = len(state._stream_revealed)
-    # Задержка между строками: от 0.55s (легко) до 0.22s (сложно)
-    row_delay  = max(0.22, 0.55 - revealed_count * 0.05)
-    # Сколько строк показывается ДО символа (окно реакции)
-    pre_rows   = random.randint(5, 9)
-    # Сколько строк символ остаётся видимым
-    flash_rows = max(2, 4 - revealed_count // 2)
-    # Строк после символа (ложная надежда)
-    post_rows  = random.randint(3, 6)
-    total_rows = pre_rows + flash_rows + post_rows
-
-    COLS       = 52   # ширина строки потока
-    _NOISE     = "0123456789ABCDEFabcdef><|/\\!@#$%^&*~+=[]{}?"
-
-    def _noise_line() -> str:
-        """Строка шума."""
-        line = ""
-        for _ in range(COLS):
-            line += random.choice(_NOISE)
-        return f"{DIM_GREEN}  {line}{RESET}"
-
-    def _flash_line(char: str) -> str:
-        """Строка с вспышкой целевого символа."""
-        pos  = random.randint(4, COLS - 6)
-        left = "".join(random.choice(_NOISE) for _ in range(pos))
-        right= "".join(random.choice(_NOISE) for _ in range(COLS - pos - 3))
-        return (f"{DIM_GREEN}  {left}"
-                f"{BRIGHT_GREEN}{BOLD}[{char}]{RESET}"
-                f"{DIM_GREEN}{right}{RESET}")
-
-    # ── Шапка ────────────────────────────────────────────────────────────────
-    print()
-    scan_line("─", 56, BRIGHT_GREEN)
-    slow_print(f"{BRIGHT_GREEN}  ▓▓ MINI-GAME: DATA STREAM INTERCEPTOR ▓▓{RESET}", delay=0.015)
-    print(f"{DIM_GREEN}  Жди вспышку {BRIGHT_GREEN}[X]{DIM_GREEN} в потоке — жми {BRIGHT_GREEN}Enter{DIM_GREEN} когда видишь её.{RESET}")
-    print(f"{DIM_GREEN}  Скорость: {'▓' * (revealed_count + 1)}{'░' * max(0, 6 - revealed_count - 1)}  "
-          f"({row_delay*1000:.0f}ms/строку){RESET}")
-    scan_line("─", 56, BRIGHT_GREEN)
-    print()
-    print(f"{YELLOW}  Готов? Нажми Enter для старта...{RESET}")
-
-    try:
-        input()
-    except (KeyboardInterrupt, EOFError):
-        return dim("  Мини-игра прервана.")
-
-    # Очищаем буфер ввода перед стартом потока (важно для Windows)
-    if _sys.platform == "win32":
-        import msvcrt
-        while msvcrt.kbhit():
-            msvcrt.getwch()
-
-    # ── Поток ────────────────────────────────────────────────────────────────
-    # Определяем в каких строках символ виден
-    flash_start = pre_rows          # индекс первой строки с символом
-    flash_end   = pre_rows + flash_rows - 1
-
-    pressed_at  = None   # на какой строке нажали Enter
-    aborted     = False
-
-    def _nonblocking_check() -> bool:
-        """
-        True если Enter/Space нажаты прямо сейчас.
-        Windows: msvcrt.kbhit() — работает в любом терминале/IDE.
-        Unix:    select() с нулевым таймаутом.
-        """
-        try:
-            if _sys.platform == "win32":
-                import msvcrt
-                # kbhit() не блокирует — возвращает True если есть символ
-                if msvcrt.kbhit():
-                    ch = msvcrt.getwch()
-                    return ch in ("\r", "\n", " ")
-                return False
-            else:
-                r, _, _ = _select.select([_sys.stdin], [], [], 0)
-                if r:
-                    _sys.stdin.readline()
-                    return True
-                return False
-        except Exception:
-            return False
-
-    # Скрываем курсор на время игры
-    print("\033[?25l", end="", flush=True)
-
-    try:
-        for row_idx in range(total_rows):
-            in_flash = flash_start <= row_idx <= flash_end
-
-            if in_flash:
-                print(_flash_line(target_char), flush=True)
-            else:
-                print(_noise_line(), flush=True)
-
-            time.sleep(row_delay)
-
-            # Проверяем нажатие после каждой строки
-            if _nonblocking_check() and pressed_at is None:
-                pressed_at = row_idx
-                # Показываем подтверждение и останавливаем поток
-                print(f"{BRIGHT_GREEN}  >>> SPACE DETECTED <<<{RESET}", flush=True)
-                break
-
-    except (KeyboardInterrupt, EOFError):
-        aborted = True
-    finally:
-        print("\033[?25h", end="", flush=True)  # возвращаем курсор
-
-    print()
-
-    if aborted:
-        return dim("  Мини-игра прервана.")
-
-    # ── Итог ─────────────────────────────────────────────────────────────────
-    if pressed_at is None:
-        # Не нажал до конца потока
-        state.add_trace(12)
-        state.log("MINIGAME datastream: MISS (no press)")
-        return (
-            f"{RED}  ✘ ПРОПУСК. Символ ушёл в поток.{RESET}\n"
-            f"{DIM_GREEN}  Целевой символ был: {BRIGHT_GREEN}[{target_char}]{RESET}\n"
-            + dim(f"  TRACE +12%. Текущий: {state.trace}%")
-        )
-    elif flash_start <= pressed_at <= flash_end:
-        # Попал в окно
-        state._stream_revealed.add(target_idx)
-        masked = "".join(
-            pwd[i] if i in state._stream_revealed else "░"
-            for i in range(len(pwd))
-        )
-        xp_gain = 40 + revealed_count * 10
-        state.add_xp(xp_gain)
-        state.log(f"MINIGAME datastream: HIT pos={target_idx} char='{target_char}'")
-        return (
-            f"{BRIGHT_GREEN}  ✔ ПЕРЕХВАТ УСПЕШЕН!{RESET}\n"
-            f"{GREEN}  Символ [{target_idx}] = '{BRIGHT_GREEN}{target_char}{GREEN}'{RESET}\n"
-            f"{YELLOW}  {masked}{RESET}\n"
-            + dim(f"  +{xp_gain} XP  |  Открыто: {len(state._stream_revealed)}/{len(pwd)}")
-        )
-    else:
-        # Нажал слишком рано
-        state.add_trace(12)
-        state.log("MINIGAME datastream: FALSE (too early)")
-        return (
-            f"{RED}  ✘ СЛИШКОМ РАНО. Ложное срабатывание.{RESET}\n"
-            f"{DIM_GREEN}  Символ ещё не появился в строке {pressed_at + 1}, "
-            f"а должен был в строке {flash_start + 1}.{RESET}\n"
-            + dim(f"  TRACE +12%. Текущий: {state.trace}%")
-        )
-
-
-
-
-
-# ─── МИНИ-ИГРА: CRC CHECK ────────────────────────────────────────────────────
+# --- МИНИ-ИГРА: DATA STREAM INTERCEPTOR -------------------------------------
 
 def minigame_crc(state) -> str:
     """
-    CRC CHECK — живой обратный отсчёт + посимвольный ввод.
+    CRC CHECK — таймер в отдельном потоке, обычный input().
+    Работает корректно и в терминале и в GUI.
     Лёгкий: 30 сек | Средний: 20 сек | Сложный: 10 сек
-    Время вышло → сразу завершается, TRACE +8%.
-    Успех → TRACE -20%.
     """
-    import sys as _sys
     import time as _time
     import threading as _threading
 
@@ -455,95 +273,68 @@ def minigame_crc(state) -> str:
     correct = a + b + c
 
     print()
-    scan_line("─", 56, YELLOW)
-    slow_print(f"{YELLOW}  ▓▓ MINI-GAME: CRC CHECKSUM VERIFICATION ▓▓{RESET}", delay=0.012)
+    scan_line("-", 56, YELLOW)
+    slow_print(f"{YELLOW}  ▓▓ MINI-GAME: CRC CHECKSUM VERIFICATION ▓▓{RESET}", delay=0.004)
     print(f"{DIM_GREEN}  Реши пример пока не истекло время. Введи сумму + Enter.{RESET}")
     print(f"{DIM_GREEN}  Успех: TRACE {GREEN}-20%{DIM_GREEN}  |  Провал: TRACE {RED}+8%{RESET}")
     diff_labels = {
-        "easy":   f"{GREEN}  [EASY]   30 сек  ●──────────────{RESET}",
-        "medium": f"{YELLOW}  [MEDIUM] 20 сек  ●─────────{RESET}",
-        "hard":   f"{RED}  [HARD]   10 сек  ●────{RESET}",
+        "easy":   f"{GREEN}  [EASY]   {time_limit} сек{RESET}",
+        "medium": f"{YELLOW}  [MEDIUM] {time_limit} сек{RESET}",
+        "hard":   f"{RED}  [HARD]   {time_limit} сек{RESET}",
     }
     print(diff_labels.get(state.difficulty, ""))
-    scan_line("─", 56, YELLOW)
+    scan_line("-", 56, YELLOW)
     print()
     print(f"{BRIGHT_GREEN}  CRC CHECK:  {WHITE}{a}  +  {b}  +  {c}  = ?{RESET}")
     print()
 
-    # Разделяемое состояние
-    chars      = []
-    timed_out  = [False]
-    stop       = _threading.Event()
+    # -- Таймер + input в отдельных потоках ------------------------------------
+    t0        = _time.time()
+    timed_out = [False]
+    answer_buf = [None]
+    done      = _threading.Event()
 
-    # ── Поток обратного отсчёта ───────────────────────────────────────────────
-    def _countdown():
-        t0 = _time.time()
-        while not stop.is_set():
-            remaining = time_limit - (_time.time() - t0)
+    def _input_thread():
+        try:
+            answer_buf[0] = input(f"  {BRIGHT_GREEN}> {RESET}").strip()
+        except (EOFError, KeyboardInterrupt):
+            answer_buf[0] = ""
+        finally:
+            done.set()
+
+    def _timer_thread():
+        step     = 5 if time_limit >= 15 else 2
+        next_print = step
+        while not done.is_set():
+            elapsed   = _time.time() - t0
+            remaining = time_limit - elapsed
             if remaining <= 0:
                 timed_out[0] = True
-                stop.set()
-                break
-            bar_len = 20
-            filled  = int((remaining / time_limit) * bar_len)
-            if remaining > time_limit * 0.5:
-                col = GREEN
-            elif remaining > time_limit * 0.2:
-                col = YELLOW
-            else:
-                col = RED
-            bar   = col + "█" * filled + "░" * (bar_len - filled) + RESET
-            typed = "".join(chars)
-            print(f"\r  {bar} {col}{remaining:5.1f}s{RESET}  > {BRIGHT_GREEN}{typed}{RESET}   ",
-                  end="", flush=True)
-            _time.sleep(0.1)
-        # Стираем строку таймера
-        print(f"\r{' ' * 60}\r", end="", flush=True)
+                done.set()
+                return
+            if elapsed >= next_print:
+                if remaining > time_limit * 0.5:
+                    col = GREEN
+                elif remaining > time_limit * 0.2:
+                    col = YELLOW
+                else:
+                    col = RED
+                bar_len = 20
+                filled  = int((remaining / time_limit) * bar_len)
+                bar = col + "█" * filled + "░" * (bar_len - filled) + RESET
+                print(f"  {bar} {col}{remaining:.0f}s осталось{RESET}", flush=True)
+                next_print += step
+            _time.sleep(0.15)
 
-    t = _threading.Thread(target=_countdown, daemon=True)
-    t.start()
+    _threading.Thread(target=_input_thread, daemon=True).start()
+    _threading.Thread(target=_timer_thread, daemon=True).start()
 
-    # ── Ввод: Windows (msvcrt) / Unix (termios) ───────────────────────────────
-    if _sys.platform == "win32":
-        import msvcrt as _msvcrt
-        while not stop.is_set():
-            if _msvcrt.kbhit():
-                ch = _msvcrt.getwch()
-                if ch in ("\r", "\n"):
-                    stop.set()
-                    break
-                elif ch in ("\x08", "\x7f"):
-                    if chars:
-                        chars.pop()
-                elif ch.isdigit() or (ch == "-" and not chars):
-                    chars.append(ch)
-            _time.sleep(0.02)
-    else:
-        import tty as _tty, termios as _termios, select as _sel
-        fd  = _sys.stdin.fileno()
-        old = _termios.tcgetattr(fd)
-        try:
-            _tty.setraw(fd)
-            while not stop.is_set():
-                rlist, _, _ = _sel.select([_sys.stdin], [], [], 0.05)
-                if rlist:
-                    ch = _sys.stdin.read(1)
-                    if ch in ("\r", "\n"):
-                        stop.set()
-                        break
-                    elif ch in ("\x08", "\x7f"):
-                        if chars:
-                            chars.pop()
-                    elif ch.isdigit() or (ch == "-" and not chars):
-                        chars.append(ch)
-        finally:
-            _termios.tcsetattr(fd, _termios.TCSADRAIN, old)
-
-    stop.set()
-    t.join(timeout=0.5)
+    # Ждём — либо игрок ввёл ответ, либо время вышло
+    done.wait()
+    answer_str = (answer_buf[0] or "").strip()
     print()
 
-    # ── Результат ─────────────────────────────────────────────────────────────
+    # -- Результат -------------------------------------------------------------
     if timed_out[0]:
         state.add_trace(8)
         state.log(f"MINIGAME crc: TIMEOUT limit={time_limit}s")
@@ -553,7 +344,6 @@ def minigame_crc(state) -> str:
             + dim(f"  TRACE +8%. Текущий: {state.trace}%")
         )
 
-    answer_str = "".join(chars).strip()
     if not answer_str:
         state.add_trace(8)
         state.log("MINIGAME crc: EMPTY")
@@ -577,18 +367,230 @@ def minigame_crc(state) -> str:
             + dim(f"  TRACE +8%. Текущий: {state.trace}%")
         )
 
-    # Победа
+    # Победа — бонус за скорость
+    t_elapsed = _time.time()  # приблизительно
     reduction = min(state.trace, 20)
     state.trace = max(0, state.trace - 20)
     state.add_xp(20)
     state.log("MINIGAME crc: WIN")
-    bonus = ""
-    if len(answer_str) <= 3:
-        state.add_xp(10)
-        bonus = f"\n{BRIGHT_GREEN}  ⚡ БЫСТРО! +10 XP бонус{RESET}"
     return (
         f"{BRIGHT_GREEN}  ✔ ВЕРИФИКАЦИЯ ПРОЙДЕНА!  {a} + {b} + {c} = {correct}{RESET}\n"
-        f"{GREEN}  TRACE -{reduction}%  |  +20 XP{RESET}"
-        + bonus + "\n"
+        f"{GREEN}  TRACE -{reduction}%  |  +20 XP{RESET}\n"
         + dim(f"  Текущий TRACE: {state.trace}%")
+    )
+
+
+
+
+def minigame_sql(state) -> str:
+    """
+    SQL INJECTION — вставь правильный оператор в запрос.
+    Успех → TRACE -25%. Провал → TRACE +10%.
+    """
+    import random as _r
+
+    challenges = [
+        {
+            "query":   "SELECT * FROM users WHERE name='admin' ___ '1'='1'",
+            "hint":    "Всегда истинное условие через логику",
+            "answers": ["OR", "or"],
+            "explain": "OR '1'='1' — всегда истина, обход аутентификации"
+        },
+        {
+            "query":   "SELECT * FROM data WHERE id=1 ___ SELECT version()",
+            "hint":    "Объединить два запроса в один",
+            "answers": ["UNION", "union"],
+            "explain": "UNION объединяет результаты двух SELECT"
+        },
+        {
+            "query":   "SELECT pass FROM users WHERE id=1 ___ 1=1",
+            "hint":    "Добавить условие которое всегда выполняется",
+            "answers": ["AND", "and"],
+            "explain": "AND 1=1 — всегда истина, не ломает запрос"
+        },
+        {
+            "query":   "SELECT * FROM logs WHERE date > '2024' ___ date IS NULL",
+            "hint":    "Расширить условие выборки",
+            "answers": ["OR", "or"],
+            "explain": "OR date IS NULL — захватывает записи без даты"
+        },
+        {
+            "query":   "DROP TABLE sessions ___ EXISTS (SELECT 1 FROM users)",
+            "hint":    "Выполнить только если условие выполнено",
+            "answers": ["WHERE", "where"],
+            "explain": "WHERE EXISTS — условное выполнение"
+        },
+        {
+            "query":   "SELECT * FROM secrets ___ id=(SELECT MIN(id) FROM secrets)",
+            "hint":    "Отфильтровать по условию",
+            "answers": ["WHERE", "where"],
+            "explain": "WHERE id= — выборка по минимальному id"
+        },
+    ]
+
+    ch = _r.choice(challenges)
+
+    print()
+    scan_line("-", 54, RED)
+    slow_print(f"{RED}  ▓▓ MINI-GAME: SQL INJECTION ▓▓{RESET}", delay=0.004)
+    slow_print(f"{DIM_GREEN}  Заполни пропуск ___ в SQL-запросе. Успех = TRACE -25%.{RESET}", delay=0.004)
+    scan_line("-", 54, RED)
+    print()
+    print(f"{DIM_GREEN}  ЦЕЛЬ: взломать базу данных NovaCorp{RESET}")
+    print()
+    print(f"{YELLOW}  ЗАПРОС:{RESET}")
+    print(f"  {WHITE}{ch['query']}{RESET}")
+    print()
+    print(f"{DIM_GREEN}  Подсказка: {ch['hint']}{RESET}")
+    print()
+
+    # Показываем варианты — один правильный, два ложных
+    all_ops = ["OR", "AND", "UNION", "WHERE", "NOT", "HAVING", "LIKE", "IN"]
+    correct_op = ch['answers'][0].upper()
+    wrong_ops  = [op for op in all_ops if op != correct_op]
+    import random as _r2
+    options = _r2.sample(wrong_ops, 2) + [correct_op]
+    _r2.shuffle(options)
+
+    print(f"{DIM_GREEN}  Варианты операторов:{RESET}")
+    for op in options:
+        print(f"  {CYAN}  {op}{RESET}")
+    print()
+
+    try:
+        answer = input(f"{BRIGHT_GREEN}  Введи оператор: {RESET}").strip()
+    except (EOFError, KeyboardInterrupt):
+        return dim("  Мини-игра прервана.")
+
+    if answer.upper() in [a.upper() for a in ch['answers']]:
+        state.add_trace(-25)
+        if state.trace < 0:
+            state.trace = 0
+        state.add_xp(30)
+        state.log("MINIGAME sql: WIN")
+        return (
+            f"{BRIGHT_GREEN}  ✔ ИНЪЕКЦИЯ УСПЕШНА!{RESET}\n"
+            f"{DIM_GREEN}  {ch['explain']}{RESET}\n"
+            f"{GREEN}  TRACE -25%  |  +30 XP{RESET}\n"
+            + dim(f"  Текущий TRACE: {state.trace}%")
+        )
+    else:
+        state.add_trace(10)
+        correct = ch['answers'][0].upper()
+        state.log(f"MINIGAME sql: FAIL got='{answer}' need='{correct}'")
+        return (
+            f"{RED}  ✘ НЕВЕРНО. Ответ: {WHITE}{correct}{RESET}\n"
+            f"{DIM_GREEN}  {ch['explain']}{RESET}\n"
+            + dim(f"  TRACE +10%. Текущий: {state.trace}%")
+        )
+
+
+
+def minigame_anagram(state) -> str:
+    """
+    ANAGRAM HACK — каждый раз случайное слово из встроенного списка.
+    Угадай → открывает настоящий пароль и победа.
+    Провал → TRACE +15%, пароль НЕ показывается.
+    Даётся 3 попытки.
+    """
+    import random as _r
+
+    # Список слов для анаграммы — независим от пароля игры
+    _WORDS = [
+        "access", "breach", "cipher", "daemon", "exploit",
+        "filter", "ghost", "hacker", "inject", "kernel",
+        "loader", "malware", "network", "output", "packet",
+        "query", "rootkit", "socket", "tracer", "upload",
+        "vector", "worm", "xploit", "zombie", "archive",
+        "buffer", "crypto", "debug", "encode", "format",
+        "gateway", "hidden", "image", "jumper", "keylog",
+        "launch", "mirror", "nmap", "origin", "payload",
+        "reboot", "signal", "tunnel", "unlock", "verify",
+    ]
+
+    pwd = _r.choice(_WORDS)
+
+    # Перемешиваем буквы так чтобы не совпало с оригиналом
+    letters = list(pwd)
+    shuffled = letters[:]
+    attempts_shuffle = 0
+    while "".join(shuffled) == pwd and attempts_shuffle < 100:
+        _r.shuffle(shuffled)
+        attempts_shuffle += 1
+    anagram = "".join(shuffled)
+
+    print()
+    scan_line("-", 54, YELLOW)
+    slow_print(f"{YELLOW}  ▓▓ MINI-GAME: ANAGRAM HACK ▓▓{RESET}", delay=0.004)
+    slow_print(f"{DIM_GREEN}  Буквы пароля перемешаны. Угадай — получишь пароль целиком.{RESET}", delay=0.004)
+    scan_line("-", 54, YELLOW)
+    print()
+    print(f"{DIM_GREEN}  Перехвачен зашифрованный фрагмент памяти:{RESET}")
+    print()
+
+    # Показываем анаграмму красиво с пробелами
+    spaced = "  ".join(f"{BRIGHT_GREEN}{BOLD}{c.upper()}{RESET}" for c in anagram)
+    print(f"  {spaced}")
+    print()
+    print(f"{DIM_GREEN}  Букв в слове: {WHITE}{len(pwd)}{RESET}")
+    print(f"{DIM_GREEN}  Подсказка: первая буква — {YELLOW}{pwd[0].upper()}{RESET}")
+    print()
+
+    max_tries = 3
+    for attempt in range(1, max_tries + 1):
+        print(f"{DIM_GREEN}  Попытка {attempt}/{max_tries}:{RESET}")
+        try:
+            answer = input(f"{BRIGHT_GREEN}  Введи слово: {RESET}").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return dim("  Мини-игра прервана.")
+
+        if answer == pwd:
+            # Победа — открываем букву которую ещё не открывали
+            state.add_xp(50)
+            state.log(f"MINIGAME anagram: WIN attempts={attempt} word={pwd}")
+            real_pwd = state.password
+            # Берём позиции которые ещё не открыты
+            if not hasattr(state, "_anagram_revealed"):
+                state._anagram_revealed = set()
+            available = [i for i in range(len(real_pwd)) if i not in state._anagram_revealed]
+            if not available:
+                # Все буквы уже открыты
+                return (
+                    f"{BRIGHT_GREEN}  ✔ ВЕРНО! АНАГРАММА ВЗЛОМАНА!{RESET}\n"
+                    f"{YELLOW}  Слово было: {WHITE}{BOLD}{pwd.upper()}{RESET}\n"
+                    f"{DIM_GREEN}  Все буквы пароля уже открыты!{RESET}\n"
+                    f"{GREEN}  +50 XP{RESET}\n"
+                    + dim(f"  TRACE без изменений: {state.trace}%")
+                )
+            idx = _r.choice(available)
+            state._anagram_revealed.add(idx)
+            ch  = real_pwd[idx]
+            masked = "".join(c if i in state._anagram_revealed else "░" for i, c in enumerate(real_pwd))
+            return (
+                f"{BRIGHT_GREEN}  ✔ ВЕРНО! АНАГРАММА ВЗЛОМАНА!{RESET}\n"
+                f"\n"
+                f"{YELLOW}  Слово было: {WHITE}{BOLD}{pwd.upper()}{RESET}\n"
+                f"\n"
+                f"{GREEN}  Фрагмент пароля NovaCorp получен:{RESET}\n"
+                f"{YELLOW}  {masked}  [{idx}]='{ch}'{RESET}\n"
+                f"{GREEN}  +50 XP  |  Открыто: {len(state._anagram_revealed)}/{len(real_pwd)}{RESET}\n"
+                + dim(f"  TRACE без изменений: {state.trace}%")
+            )
+
+        # Неверно — только длину показываем, не слово
+        correct_letters = sum(1 for a, b in zip(answer, pwd) if a == b)
+        print(f"  {RED}  ✘ Неверно.{RESET}", end="")
+        if len(answer) != len(pwd):
+            print(f"  {DIM_GREEN}Длина неверная: нужно {len(pwd)} букв{RESET}")
+        else:
+            print(f"  {DIM_GREEN}Совпало на своих местах: {YELLOW}{correct_letters}/{len(pwd)}{RESET}")
+        print()
+
+    # Провал — показываем слово анаграммы, пароль игры не раскрываем
+    state.add_trace(15)
+    state.log("MINIGAME anagram: FAIL")
+    return (
+        f"{RED}  ✘ ПОПЫТКИ ИСЧЕРПАНЫ.{RESET}\n"
+        f"{DIM_GREEN}  Слово было: {WHITE}{pwd.upper()}{RESET}\n"
+        + dim(f"  TRACE +15%. Текущий: {state.trace}%")
     )

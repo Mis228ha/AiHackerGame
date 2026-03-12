@@ -185,7 +185,7 @@ def select_ai_backend() -> tuple:
                 break
             print(r("  Введите цифру от 1 до 8."))
 
-        # ── Ollama ───────────────────────────────────────────────────────────
+        # -- Ollama -----------------------------------------------------------
         if choice == "ollama":
             try:
                 model = input(g("  Модель Ollama [llama3]: ")).strip() or "llama3"
@@ -193,12 +193,12 @@ def select_ai_backend() -> tuple:
                 print(); sys.exit(0)
             return OllamaBackend(model=model), f"Ollama/{model}"
 
-        # ── Локальный ────────────────────────────────────────────────────────
+        # -- Локальный --------------------------------------------------------
         if choice == "local":
             print(dim("  Локальный режим. API не нужен."))
             return None, "LOCAL"
 
-        # ── API-бэкенды: запрашиваем ключ ────────────────────────────────────
+        # -- API-бэкенды: запрашиваем ключ ------------------------------------
         backend, name = _ask_api_key(choice)
 
         if backend is None and name == "LOCAL":
