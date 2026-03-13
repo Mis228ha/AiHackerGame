@@ -240,6 +240,9 @@ def run_session(ai_backend, ai_name: str, difficulty: str,
         print(g(f"  Сложность: {diff_display.get(difficulty, difficulty)}"))
         print(dim(f"  Сессия ID: 0x{random.randint(0xA000, 0xFFFF):X}"))
         scan_line()
+        print()
+        print(f"{YELLOW}  >> Нажми Enter чтобы начать, или введи n для отмены{RESET}")
+        print()
         try:
             confirm = input(f"{BRIGHT_GREEN}  Начать? [Enter/n]: {RESET}").strip().lower()
         except (KeyboardInterrupt, EOFError):

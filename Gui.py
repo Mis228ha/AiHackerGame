@@ -370,6 +370,15 @@ class TerminalWidget(ctk.CTkFrame):
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUTF8"] = "1"
 
+        # Скрываем консольное окно на Windows
+        startupinfo = None
+        creationflags = 0
+        if sys.platform == "win32":
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            creationflags = subprocess.CREATE_NO_WINDOW
+
         self._proc = subprocess.Popen(
             [python_exe, "-u", os.path.basename(script_path)],
             cwd=folder,
@@ -381,6 +390,8 @@ class TerminalWidget(ctk.CTkFrame):
             encoding="utf-8",
             errors="replace",
             env=env,
+            startupinfo=startupinfo,
+            creationflags=creationflags,
         )
         self._running = True
         threading.Thread(target=self._read_output, daemon=True).start()

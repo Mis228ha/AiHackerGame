@@ -346,7 +346,7 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
             hidden_count = len(hidden_hard)
 
         def row(cmd, cost, desc):
-            return f"{BRIGHT_GREEN}  {cmd:<22}{RESET}{cost:<18}{DIM_GREEN}{desc}{RESET}"
+            return f"{BRIGHT_GREEN}  {cmd:<24}{RESET}  {cost:<22}  {DIM_GREEN}{desc}{RESET}"
 
         def sec(title):
             return f"\n{GREEN}  -- {title} {'-'*(54-len(title))}{RESET}"
@@ -378,8 +378,11 @@ def handle_command(cmd: str, state, ai) -> Optional[str]:
 
             sec("МИНИ-ИГРЫ /minigame"),
             f"{DIM_GREEN}  {'':22}{'':18}Открывает новую букву. Скорость растёт.{RESET}",
-            row("/minigame simon",  f"{RED}провал: TRACE+10%{RESET}", "Запомни и повтори 4 символа → +25 XP + буква."),
-            row("/minigame hash",   f"{RED}провал: TRACE+8%{RESET}",  "Дешифруй хеш → угадай первые 3 символа → +35 XP."),
+            row("/minigame simon",   f"{RED}провал: TRACE+10%{RESET}", "Запомни и повтори 4 символа → +25 XP + буква."),
+            row("/minigame hash",    f"{RED}провал: TRACE+8%{RESET}",  "Дешифруй хеш → угадай первые 3 символа → +35 XP."),
+            row("/minigame crc",     f"{RED}провал: TRACE+8%{RESET}",  "Реши пример за отведённое время → TRACE -20%."),
+            row("/minigame sql",     f"{RED}провал: TRACE+10%{RESET}", "Вставь SQL оператор в запрос → TRACE -25%."),
+            row("/minigame anagram", f"{RED}провал: TRACE+15%{RESET}", "Угадай анаграмму → открывает букву пароля."),
             f"{DIM_GREEN}  {'':22}{'':18}Подсказка: 4=a, 3=e, 1=i, 0=o{RESET}",
 
             sec("РАЗВЕДКА (рискованно — поднимают TRACE)"),

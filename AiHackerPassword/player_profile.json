@@ -1,8 +1,8 @@
 {
   "wins": 2,
-  "losses": 2,
-  "total_sessions": 4,
-  "total_turns": 21,
+  "losses": 3,
+  "total_sessions": 5,
+  "total_turns": 27,
   "best_time": 50.34482932090759,
   "best_turns": 2,
   "min_trace_win": 0,
