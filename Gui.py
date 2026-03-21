@@ -124,8 +124,10 @@ def find_file(names: list) -> str | None:
         internal,
         os.path.join(base, "AiHackerPassword"),
         os.path.join(base, "AiHackerHaos"),
+        os.path.join(base, "EscapeTerminal"),
         os.path.join(internal, "AiHackerPassword"),
         os.path.join(internal, "AiHackerHaos"),
+        os.path.join(internal, "EscapeTerminal"),
         os.path.join(base, "hackerHaos"),
         os.path.join(base, "HackerHaos"),
         os.path.join(base, "haos"),
@@ -272,14 +274,16 @@ class TerminalWidget(ctk.CTkFrame):
 
         # Настройка тегов цветов (ANSI → теги tkinter)
         tb = self.output._textbox
-        tb.tag_config("green",  foreground="#eeffee")
-        tb.tag_config("bright", foreground="#eeffee")
-        tb.tag_config("dim",    foreground="#99cc99")
-        tb.tag_config("red",    foreground=COLORS["red"])
-        tb.tag_config("yellow", foreground=COLORS["yellow"])
-        tb.tag_config("cyan",   foreground=COLORS["cyan"])
-        tb.tag_config("white",  foreground=COLORS["white"])
-        tb.tag_config("prompt", foreground=COLORS["cyan"])
+        tb.tag_config("green",    foreground="#00ff41")
+        tb.tag_config("bright",   foreground="#00ff41")
+        tb.tag_config("dim",      foreground="#00aa28")
+        tb.tag_config("red",      foreground=COLORS["red"])
+        tb.tag_config("yellow",   foreground=COLORS["yellow"])
+        tb.tag_config("cyan",     foreground=COLORS["cyan"])
+        tb.tag_config("white",    foreground=COLORS["white"])
+        tb.tag_config("blue",     foreground="#6699ff")
+        tb.tag_config("magenta",  foreground="#ff66ff")
+        tb.tag_config("prompt",   foreground=COLORS["cyan"])
 
         # -- Строка ввода ------------------------------------------------------
         input_row = ctk.CTkFrame(self, fg_color=COLORS["bg_input"], height=46)
@@ -449,13 +453,26 @@ class TerminalWidget(ctk.CTkFrame):
         CODE_MAP = {
             "0": None, "2": "dim", "1": "bright",
             "91": "red", "92": "green", "93": "yellow",
-            "96": "cyan", "97": "white",
+            "94": "blue", "95": "magenta", "96": "cyan", "97": "white",
             "1;92": "bright", "2;32": "dim",
         }
+
+        # Маркер для очистки лабиринта: ##CLEAR:N## — удалить последние N строк
+        clear_re = re.compile(r'##CLEAR:(\d+)##')
 
         for line in iter(self._proc.stdout.readline, ""):
             if not self._running:
                 break
+            # Проверяем маркер очистки
+            m = clear_re.search(line)
+            if m:
+                n = int(m.group(1))
+                self.after(0, lambda n=n: self._delete_last_lines(n))
+                # Убираем маркер из строки и выводим остаток если есть
+                line = clear_re.sub("", line)
+                if line.strip():
+                    self._append_ansi_line(line, ansi_escape, CODE_MAP)
+                continue
             self._append_ansi_line(line, ansi_escape, CODE_MAP)
             # Перехватываем сообщение о неверном API-ключе
             if "не похоже на API-ключ" in line or "Это не похоже на API" in line:
@@ -503,6 +520,15 @@ class TerminalWidget(ctk.CTkFrame):
 
     def _append_text(self, text, tag="green"):
         self.after(0, lambda: self._write_segments([(text, tag)]))
+
+    def _delete_last_lines(self, n):
+        """Удаляет последние N строк из терминала (для перерисовки лабиринта)."""
+        tb = self.output._textbox
+        tb.configure(state="normal")
+        for _ in range(n):
+            tb.delete("end-2l", "end-1l")
+        tb.see("end")
+        tb.configure(state="disabled")
 
     def clear(self):
         tb = self.output._textbox
@@ -590,6 +616,23 @@ class Sidebar(ctk.CTkFrame):
                 "  от твоих решений\n"
             )
         )
+        self._escape_btn = self._btn(
+            "▶  ESCAPE TERMINAL",
+            COLORS["cyan"],
+            lambda: self.on_launch("escape"),
+            desc="Побег из терминала",
+            hover_text=(
+                "ESCAPE TERMINAL\n"
+                "---------------------------------\n"
+                "Ты заперт внутри системы.\n"
+                "Пять барьеров. Один шанс.\n"
+                "\n"
+                "▸ 5 уровней подряд: провод, лабиринт,\n"
+                "  морзянка, реактор, призрак\n"
+                "▸ Один провал — конец. Второго шанса нет\n"
+                "▸ Пройди все 5 — выберешься наружу\n"
+            )
+        )
 
         # Информационная панель — описание режима при наведении
         self._info_label = ctk.CTkLabel(
@@ -642,8 +685,9 @@ class Sidebar(ctk.CTkFrame):
             ("/minigame crc",   "CRC-проверка"),
             ("/quit",           "Завершить"),
         ]
+        self._all_cmd_btns = []
         for cmd, label in cmds:
-            self._cmd_btn(cmd, label)
+            self._all_cmd_btns.append(self._cmd_btn(cmd, label))
 
         self._divider()
 
@@ -696,6 +740,19 @@ class Sidebar(ctk.CTkFrame):
         if hasattr(self, "_info_label"):
             self._info_label.configure(text="")
 
+    # Описания для hover на кнопках быстрых команд
+    _CMD_HOVER = {
+        "/help":         "Показать полную справку по командам",
+        "/status":       "Показать TRACE, XP, уровень и профиль",
+        "/hint pos":     "Открыть 1 случайную букву пароля\n(стоит 60 XP + TRACE +3%)",
+        "/hint word":    "Узнать словесную часть пароля\n(стоит 100 XP + TRACE +5%)",
+        "/minigame crc": "Мини-игра: реши пример за время\nУспех = TRACE -20%",
+        "/minigame sql": "Мини-игра: SQL инъекция\nУспех = TRACE -25%",
+        "/scan":         "Извлечь реальную подсказку [!!]\nиз потока шума (+5 TRACE)",
+        "/filter":       "Показать все найденные [!!]\nподсказки в одном месте",
+        "/quit":         "Завершить текущую сессию досрочно",
+    }
+
     def _cmd_btn(self, cmd, label):
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(fill="x", padx=10, pady=2)
@@ -719,13 +776,29 @@ class Sidebar(ctk.CTkFrame):
         )
         btn.pack(side="right", fill="x", expand=True)
 
+        # Hover-описание
+        hover = self._CMD_HOVER.get(cmd)
+        if hover:
+            btn.bind("<Enter>", lambda e, t=hover: self._show_hover(t, COLORS["green_dim"]))
+            btn.bind("<Leave>", lambda e: self._hide_hover())
+        return btn
+
     def lock_version_buttons(self, mode: str):
         """Блокирует кнопки выбора версии пока идёт игра."""
         self._breach_btn.configure(state="disabled", fg_color="#111811",
                                    text_color=COLORS["dim"], border_color=COLORS["dim"])
         self._haos_btn.configure(state="disabled", fg_color="#111811",
                                  text_color=COLORS["dim"], border_color=COLORS["dim"])
-        name = "BREACH PROTOCOL" if mode == "breach" else "HAOS EDITION"
+        self._escape_btn.configure(state="disabled", fg_color="#111811",
+                                   text_color=COLORS["dim"], border_color=COLORS["dim"])
+        if mode == "breach":    name = "BREACH PROTOCOL"
+        elif mode == "haos":    name = "HAOS EDITION"
+        else:                   name = "ESCAPE TERMINAL"
+        # В режиме escape быстрые команды не работают
+        if mode == "escape" and hasattr(self, "_all_cmd_btns"):
+            for btn in self._all_cmd_btns:
+                btn.configure(state="disabled", text_color=COLORS["dim"],
+                              border_color="#222222", fg_color="#0a0a0a")
 
     def unlock_version_buttons(self):
         """Разблокирует кнопки после завершения игры."""
@@ -733,7 +806,14 @@ class Sidebar(ctk.CTkFrame):
                                    text_color=COLORS["green"], border_color=COLORS["green"])
         self._haos_btn.configure(state="normal", fg_color=COLORS["border"],
                                  text_color=COLORS["red"], border_color=COLORS["red"])
+        self._escape_btn.configure(state="normal", fg_color=COLORS["border"],
+                                   text_color=COLORS["cyan"], border_color=COLORS["cyan"])
         self._lock_label.configure(text="")
+        # Восстанавливаем быстрые команды
+        if hasattr(self, "_all_cmd_btns"):
+            for btn in self._all_cmd_btns:
+                btn.configure(state="normal", text_color=COLORS["green_bright"],
+                              border_color=COLORS["dim"], fg_color=COLORS["bg"])
         # Скрываем кнопку прерывания
         if self._quit_btn_visible:
             self._quit_btn.pack_forget()
@@ -1016,7 +1096,7 @@ class CybercoreGUI(ctk.CTk):
     def _connect_sidebar(self):
         self.sidebar._terminal = self.terminal
         # Подключаем hover для кнопок версий
-        for btn in [self.sidebar._breach_btn, self.sidebar._haos_btn]:
+        for btn in [self.sidebar._breach_btn, self.sidebar._haos_btn, self.sidebar._escape_btn]:
             if hasattr(btn, "_hover_text"):
                 ht = btn._hover_text
                 hc = btn._hover_color
@@ -1055,6 +1135,9 @@ class CybercoreGUI(ctk.CTk):
             ("  [2]  HAOS EDITION\n", "red"),
             ("       сигнал vs шум, 5 концовок\n", "dim"),
             ("\n", "green"),
+            ("  [3]  ESCAPE TERMINAL\n", "cyan"),
+            ("       5 барьеров. один шанс. побеги из системы.\n", "dim"),
+            ("\n", "green"),
             ("  УПРАВЛЕНИЕ:\n", "yellow"),
             ("  ↑ / ↓   — история команд\n", "dim"),
             ("  F11     — полный экран\n", "dim"),
@@ -1076,21 +1159,26 @@ class CybercoreGUI(ctk.CTk):
             path = find_file(["AiHackerGame.py"])
             title = "BREACH PROTOCOL"
             color = COLORS["green"]
-        else:
+        elif mode == "haos":
             path = find_file(["HackerHaos.py", "hackerHaos.py"])
             title = "HAOS EDITION"
             color = COLORS["red"]
+        else:
+            path = find_file(["Escape.py", "escape.py"])
+            title = "ESCAPE TERMINAL"
+            color = COLORS["cyan"]
 
         if not path:
-            name = "AiHackerGame.py" if mode == "breach" else "HackerHaos.py"
+            if mode == "breach":   name = "AiHackerPassword/AiHackerGame.py"
+            elif mode == "haos":   name = "AiHackerHaos/HackerHaos.py"
+            else:                  name = "EscapeTerminal/Escape.py"
             base = _get_base_dir()
             self.terminal._append_text(
                 "\n  ✘ Файл не найден: " + name + "\n"
                 "  Искал в: " + base + "\n"
                 "  и во всех подпапках...\n\n"
-                "  Убедись что файл лежит в одной из папок рядом с Gui.py\n"
-                "  Например:  AiHackerPassword/AiHackerGame.py\n"
-                "             AiHackerHaos/HackerHaos.py\n\n",
+                "  Убедись что файл лежит в папке рядом с Gui.py\n"
+                "  Например:  EscapeTerminal/Escape.py\n\n",
                 "red"
             )
             return
