@@ -21,7 +21,7 @@ import random
 try:
     import customtkinter as ctk
 except ImportError:
-    print("Установи customtkinter:  pip install customtkinter")
+    print("Установи customtkinter:  pip install customtkinter") 
     sys.exit(1)
 
 # --- ЦВЕТОВАЯ СХЕМА ----------------------------------------------------------
